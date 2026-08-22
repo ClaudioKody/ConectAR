@@ -1,0 +1,6 @@
+Configuración opcional de Conecto+
+
+CONECTO_SECRET=cambiame-por-una-clave-larga
+CONECTO_DB=instance/conecto.sqlite3
+
+En producción, definí estas variables en el entorno del sistema y no las guardes en el repositorio.

@@ -1,0 +1,604 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-shell {{ mode }}">
+<aside class="sidebar">
+<div class="brand compact"><span>Conecto+</span><small>Aprendemos juntos</small></div>
+<div class="profile-mini"><strong>{{ user['full_name'] }}</strong><small>{{ 'Profesor/a' if mode == 'teacher' else 'Alumno/a' }}</small></div>
+<nav>
+<a href="#home" data-view="home" class="active" onclick="return showView('home', event)"><span>Inicio</span></a>
+{% if mode == 'teacher' %}
+<a href="#aula" data-view="aula" onclick="return showView('aula', event)"><span>Aula</span></a>
+<a href="#students" data-view="students" onclick="return showView('students', event)"><span>Estudiantes</span></a>
+<a href="#mensajes" data-view="mensajes" onclick="return showView('mensajes', event)"><span>Mensajes</span> {% if unread_total %}<b class="nav-badge">{{ unread_total }}</b>{% endif %}</a>
+<a href="#ayuda-profe" data-view="ayuda-profe" onclick="return showView('ayuda-profe', event)"><span>Necesito ayuda</span> {% if pending_help_count %}<b class="nav-badge">{{ pending_help_count }}</b>{% endif %}</a>
+<a href="#avisos" data-view="avisos" onclick="return showView('avisos', event)"><span>Avisos</span> {% if student_notices %}<b class="nav-badge">{{ student_notices | length }}</b> {% endif %}</a>
+<a href="#progreso-profe" data-view="progreso-profe" onclick="return showView('progreso-profe', event)"><span>Progreso</span></a>
+<a href="#agenda" data-view="agenda" onclick="return showView('agenda', event)"><span>Recordatorios y agenda</span></a>
+<a href="#familias" data-view="familias" onclick="return showView('familias', event)"><span>Familias</span></a>
+<a href="#settings" data-view="settings" onclick="return showView('settings', event)"><span>Configuración</span></a>
+{% else %}
+<a href="#misclases" data-view="misclases" onclick="return showView('misclases', event)"><span>Mis clases</span></a>
+<a href="#pendientes" data-view="pendientes" onclick="return showView('pendientes', event)"><span>Tareas pendientes</span> {% if pending_tasks %}<b class="nav-badge">{{ pending_tasks|length }}</b>{% endif %}</a>
+<a href="#mensajes" data-view="mensajes" onclick="return showView('mensajes', event)"><span>Mensajes</span> {% if unread_total %}<b class="nav-badge">{{ unread_total }}</b>{% endif %}</a>
+<a href="#avisos" data-view="avisos" onclick="return showView('avisos', event)"><span>Avisos</span></a>
+<a href="#calendario" data-view="calendario" onclick="return showView('calendario', event)"><span>Calendario</span></a>
+<a href="#progreso" data-view="progreso" onclick="return showView('progreso', event)"><span>Mi progreso</span></a>
+<a href="#recursos" data-view="recursos" onclick="return showView('recursos', event)"><span>Recursos de apoyo</span></a>
+<a href="#ayuda" data-view="ayuda" onclick="return showView('ayuda', event)"><span>Necesito ayuda</span></a>
+<a href="#familia" data-view="familia" onclick="return showView('familia', event)"><span>Familia</span></a>
+<a href="#settings" data-view="settings" onclick="return showView('settings', event)"><span>Configuración</span></a>
+{% endif %}
+</nav>
+<a class="logout" href="{{ url_for('logout') }}">Cerrar sesión</a>
+</aside>
+<main class="dashboard-main">
+<header class="topbar">
+<div><p class="eyebrow">{{ 'Panel docente' if mode == 'teacher' else 'Panel alumno' }}</p>
+<h1>Hola, {{ user['full_name'].split()[0] }} <span></span></h1>
+<small>{{ today_label }}</small>
+</div>
+<div class="top-actions">
+<span class="notification">{% if unread_total %} <span class="badge">{{ unread_total }}</span>{% endif %}</span>
+<span class="avatar">{{ user['full_name'][0] }}</span>
+</div>
+</header>
+{% if mode == 'teacher' %}
+<!-- INICIO ===== -->
+<div class="view active" id="view-home">
+<section class="hero teacher-hero">
+<div><p class="eyebrow">Un espacio diseñado para</p><h2>aprender, comunicarnos<br>y crecer juntos <span></span></h2><p>Organizá tus materias, acompaña a tus alumnos y comparti propuestas claras y adaptadas.</p></div>
+<div class="hero-art"></div>
+</section>
+<div class="quick-grid">
+<button type="button" class="quick violet" onclick="document.getElementById('new-task-modal').showModal()"><strong>Nueva tarea</strong><small>Publicar para tus alumnos</small></button>
+<button type="button" class="quick blue" onclick="showView('aula')"><strong>Mis materias</strong><small>Gestionar aula</small></button>
+<button type="button" class="quick pink" onclick="showView('ayuda-profe')"><strong>Necesito ayuda</strong><small>{{ pending_help_count }} pedido(s) pendiente(s)</small></button>
+<button type="button" class="quick mint" onclick="showView('avisos')"><strong>Avisos</strong><small>Crear / revisar avisos</small></button>
+</div>
+</div>
+<dialog id="new-task-modal" class="modal">
+<form method="post" action="{{ url_for('create_task') }}" enctype="multipart/form-data" class="task-form">
+<div class="modal-head"><h3>Nueva tarea</h3><button type="button" class="icon-close" onclick="document.getElementById('new-task-modal').close()">X</button></div>
+<label>Materia
+{% if subjects %}
+<select name="subject" required>
+<option value="">Elegi una materia</option>
+{% for subject in subjects %}<option value="{{ subject }}">{{ subject }}</option>{% endfor %}
+</select>
+{% else %}
+<span class="empty small">Todavía no registraste materias. Agrega una en la sección Aula antes de crear una tarea.</span>
+{% endif %}
+</label>
+<label>Titulo<input name="title" placeholder="Titulo de la tarea" required></label>
+<label>Descripción<textarea name="description" placeholder="Descripción de la tarea, con tus palabras"></textarea></label>
+<label>Pasos simplificados (opcional, uno por linea) <textarea name="steps" placeholder="Ej:&#10; Abrir el cuaderno&#10; Leer la primera página&#10; Escribir una oración"></textarea></label>
+<label>Archivo adjunto (opcional) <input type="file" name="attachment" accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg,.gif"></label>
+<label>Fecha de entrega<input type="date" name="due_at"></label>
+<label>¿Para quién es?
+<select name="student_id">
+<option value="">Todo el curso</option>
+{% for student in students %}<option value="{{ student['id'] }}">{{ student['full_name'] }}</option>{% endfor %}
+</select>
+</label>
+<button class="primary" type="submit" {% if not subjects %}disabled{% endif %}>Publicar tarea</button>
+</form>
+</dialog>
+<!-- AULA -->
+<div class="view" id="view-aula">
+<section class="panel" id="aula">
+<div class="section-head"><h3>Aula</h3><span>Materias que dictás</span></div>
+<form class="inline-form" method="post" action="{{ url_for('save_subjects') }}"><input name="subjects" value="{{ subjects|join(', ') }}" placeholder="Ej. Matemáticas, Lengua">
+<button class="outline-button">Guardar materias</button>
+</form>
+<div class="chips">{% for subject in subjects %}<span>{{ subject }}</span>{% else %}<p class="empty">Todavía no registraste materias.</p>{% endfor %}</div>
+<h3 class="subhead">Tareas publicadas</h3>
+<button type="button" class="outline-button" onclick="document.getElementById('new-task-modal').showModal()">+ Nueva tarea</button>
+{% for task in tasks %}
+<div class="task-row">
+<div>
+<strong>{{ task['title'] }}</strong>
+<small>({{ task['subject'] }} · {{ task['student_name'] or 'Todo el curso' }})</small>
+</div>
+{% if task['completed'] %}<span class="tag green">Completada</span>{% else %}<span class="tag">Pendiente</span>{% endif %}
+</div>
+{% else %}<p class="empty">Todavia no publicaste tareas.</p>{% endfor %}
+</section>
+</div>
+<!-- ESTUDIANTES -->
+<div class="view" id="view-students">
+<section class="panel" id="students">
+<div class="section-head"><h3>Estudiantes</h3><span>{{ students|length }} registrados</span></div>
+{% for student in students %}
+<div class="person-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid #eee;">
+<div style="display: flex; gap: 1rem; align-items: center;">
+<span class="avatar mint" style="background:#e0f2fe; padding:10px; border-radius: 50%;">{{ student['full_name'][0] }}</span>
+<div>
+<strong>{{ student['full_name'] }}</strong><br>
+<small>{% if student['last_login'] %}Última conexión: {{ student['last_login'] }}{% else %}Todavía no inició sesión{% endif %}</small>
+</div></div>
+<div style="display: flex; gap: 0.5rem;">
+<button type="button" class="tag" onclick="showView('progreso-profe')">Ver progreso</button>
+<form method="post" action="{{ url_for('delete_student', student_id=student['id']) }}" onsubmit="return confirm('¿Estás seguro de eliminar a este estudiante?');">
+<button type="submit" class="outline-button" style="color: #dc2626; border-color: #fca5a5;">Quitar</button>
+</form>
+</div>
+</div>
+{% else %}<p class="empty">Los alumnos registrados aparecerán aqui.</p>{% endfor %}
+</section>
+</div>
+<!-- MENSAJES -->
+<div class="view" id="view-mensajes">
+<section class="panel" id="mensajes">
+<div class="section-head"><h3>Mensajes</h3><span>Conversaciones con alumnos</span></div>
+{% for thread in student_threads %}
+<details class="subject-block" style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; background: #fff;">
+<summary style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+<div style="display: flex; align-items: center; gap: 0.8rem;">
+<span class="avatar mint" style="background: #e0f2fe; padding: 8px; border-radius: 50%;">{{ thread.student['full_name'][0] }}</span>
+<strong>{{ thread.student['full_name'] }}</strong>
+</div>
+{% if thread.unread %} <span class="tag pink" style="background: #fdf2f8; color: #db2777; padding: 2px 8px; border-radius: 10px;">{{ thread.unread }} nuevo(s)</span>{% else %} <span class="tag">Al Día</span> {% endif %}
+</summary>
+<div class="thread-messages" style="margin-top: 1rem; max-height: 250px; overflow-y: auto; padding: 0.5rem; background: #f9fafb; border-radius: 8px;">
+{% for m in thread.messages %}
+<div class="bubble" style="margin-bottom: 0.5rem; padding: 0.5rem; background: {{ '#e0e7ff' if m['sender_id'] == user['id'] else '#fff'}}; border-radius: 8px; width: fit-content; max-width: 80%; {% if m['sender_id'] == user['id'] %}margin-left: auto; text-align: right;{% endif %}">
+<small style="color: #6b7280; display: block; font-size: 0.75rem;">{{ m['created_at'] }}</small>
+<span>{{ m['body'] }}</span>
+</div>
+{% else %}
+<p class="empty small">Todavía no hay mensajes con este alumno.</p>
+{% endfor %}
+</div>
+<form class="message-form" method="post" action="{{ url_for('send_message') }}" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+<input type="hidden" name="receiver_id" value="{{ thread.student['id'] }}">
+<textarea name="body" placeholder="Escribile..." required style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 8px; height: 40px;"></textarea>
+<button class="primary" style="padding: 0.5rem 1rem; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer;">Enviar</button>
+</form>
+</details>
+{% else %}<p class="empty">Todavía no hay alumnos registrados.</p>{% endfor %}
+</section>
+</div>
+<!-- NECESITO AYUDA -->
+<div class="view" id="view-ayuda-profe">
+<section class="panel" id="ayuda-profe">
+<div class="section-head"><h3>Necesito ayuda</h3><span>Pedidos de tus alumnos</span></div>
+{% for h in help_requests %}
+<div class="help-row {{ 'attended' if h['status'] != 'pendiente' else '' }}">
+<div>
+<strong>{{ h['student_name'] }}</strong>
+<small>{{ h['option_label'] }} {% if h['task_title'] %}: {{ h['task_title'] }}{% endif %} - {{ h['created_at'] }}</small>
+{% if h['note'] %}<p class="help-note">"{{ h['note'] }}"</p>{% endif %}
+</div>
+{% if h['status'] == 'pendiente' %}<form method="post" action="{{ url_for('attend_help_request', request_id=h['id']) }}">
+<button class="outline-button small">Marcar atendido</button>
+</form>
+{% else %}
+<span class="tag green">Atendido</span>
+{% endif %}
+</div>
+{% else %}<p class="empty">No hay pedidos de ayuda por el momento.</p>{% endfor %}
+</section>
+</div>
+<!-- AVISOS -->
+<div class="view" id="view-avisos">
+<section class="panel" id="announcements">
+<div class="section-head"><h3>Avisos importantes</h3><span>Para tus alumnos</span></div>
+<form class="task-form" method="post" action="{{ url_for('create_announcement') }}">
+<input name="title" placeholder="Titulo del aviso" required>
+<textarea name="body" placeholder="Mensaje importante" required></textarea>
+<select name="student_id"><option value="">Todo el curso</option>{% for student in students %}<option value="{{ student['id'] }}">{{ student['full_name'] }}</option>{% endfor %}</select>
+<button class="primary">Publicar aviso</button>
+</form>
+{% for announcement in announcements[:5] %}
+<div class="notice"><strong>{{ announcement['title'] }}</strong><small>{{ announcement['body'] }}</small></div>
+{% else %}<p class="empty">No hay avisos recientes.</p>{% endfor %}
+</section>
+</div>
+<!-- PROGRESO -->
+<div class="view" id="view-progreso-profe">
+<section class="panel" id="progreso-profe">
+<div class="section-head"><h3>Progreso</h3><span>Por alumno</span></div>
+{% for item in student_progress %}
+<div class="progress-row">
+<div class="progress-row-head"><strong>{{ item.student['full_name'] }}</strong><small>{{ item.progress.completed }}/{{ item.progress.total }} tareas ({{ item.progress.percent }}%)</small></div>
+<div class="progress-bar"><div class="progress-fill" style="width: {{ item.progress.percent }}%"></div></div>
+</div>
+{% else %}<p class="empty">Cuando tengas alumnos con tareas asignadas vas a ver su progreso acá.</p>{% endfor %}
+</section>
+</div>
+<!-- RECORDATORIOS Y AGENDA -->
+<div class="view" id="view-agenda">
+<section class="panel" id="agenda">
+<div class="section-head"><h3>Recordatorios y agenda</h3><span>{{ calendar.month_label }}</span></div>
+<table class="mini-calendar">
+<thead><tr>{% for wd in calendar.weekday_labels %}<th>{{ wd }}</th>{% endfor %}</tr></thead>
+<tbody>
+{% for week in calendar.weeks %}
+<tr>
+{% for day in week %}
+{% if day == 0 %}<td class="empty-day"></td>
+{% else %}<td class="{{ 'today' if day == calendar.today else '' }} {{ 'has-event' if day in calendar.events_by_day else '' }}">
+<span>{{ day }}</span>
+</td>
+{% endif %}
+{% endfor %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</section>
+</div>
+<!-- FAMILIAS -->
+<div class="view" id="view-familias">
+<section class="panel" id="familias">
+<div class="section-head"><h3>Reunión con familiares</h3><span>Contactos registrados</span></div>
+{% for c in family_contacts %}
+<div class="person-row">
+<span class="avatar mint">{{ c['contact_name'][0] }}</span>
+<div><strong>{{ c['contact_name'] }}</strong><small>{{ c['relationship'] or 'Familiar' }} de {{ c['student_name'] }} {% if c['phone'] %} - Tel: {{ c['phone'] }}{% endif %}</small></div></div>
+{% else %}<p class="empty">Los alumnos todavía no registraron un contacto familiar.</p>{% endfor %}
+</section>
+</div>
+<!-- CONFIGURACIÓN -->
+<div class="view" id="view-settings">
+<section class="panel" id="settings">
+<div class="section-head"><h3>Configuración</h3><span>Sonido y Accesibilidad</span></div>
+<div class="switch-row" style="justify-content:center; align-items:center; gap:1.2rem; margin-bottom:0.8rem;">
+<span>Tamaño de letra</span>
+<div style="display:flex; gap:0.6rem; align-items:center;">
+<button type="button" id="font-decrease" aria-label="Achicar letra" style="width:32px;height:32px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;font-weight:600;">A-</button>
+<span id="font-size-label" style="min-width:3.5ch; text-align:center; font-weight:600; color:#4f46e5;">100%</span>
+<button type="button" id="font-increase" aria-label="Agrandar letra" style="width:32px;height:32px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;font-weight:600;">A+</button>
+</div>
+</div>
+<label class="switch-row" style="justify-content:center;"><span>Activar lectura por parlantes de ayuda</span><input type="checkbox" id="voice-toggle-teacher" onchange="toggleVoice(this.checked)"></label>
+</section>
+</div>
+{% else %}
+<!-- INICIO ALUMNO -->
+<div class="view active" id="view-home">
+<section class="hero student-hero">
+<div><p class="eyebrow">Este es tu espacio para</p><h2>aprender a tu manera <span>♥</span></h2><p>Aquí podés encontrar tus clases, comunicarte con tus profes y pedir ayuda cuando la necesites.</p></div>
+<div class="hero-art"></div>
+</section>
+<section class="panel" id="rutina">
+<div class="section-head"><h3>Mi rutina de hoy</h3><span>{{ tasks|length }} actividades</span></div>
+{% for task in tasks %}
+{% set steps = task['steps'].split('\n') if task['steps'] else [] %}
+{% set clean_steps = steps | select | list %}
+<div class="task-row adapted">
+<div>
+<div style="display: flex; align-items: center; gap: 0.5rem;">
+<strong>{{ task['title'] }}</strong>
+<button type="button" class="speaker-btn" data-speak="{{ task['title'] ~ '. ' ~ (clean_steps | join('. ') if clean_steps else task['description']) }}" style="background:none; border:none; cursor:pointer; font-size: 1.1rem; display:none;" title="Escuchar">🔊</button>
+</div>
+<small>{{ task['subject'] }} · {{ task['teacher_name'] }}</small>
+{% if clean_steps %}<ol class="step-list">{% for step in clean_steps %}<li>{{ step }}</li>{% endfor %}</ol>
+{% elif task['description'] %}
+<p class="task-description">{{ task['description'] }}</p>
+{% endif %}
+</div>
+{% if not task['completed'] %}
+<form method="post" action="{{ url_for('complete_task', task_id=task['id']) }}"><button class="outline-button">Completar</button></form>
+{% else %}
+<span class="tag green">Completada</span>
+{% endif %}
+</div>
+{% else %}<p class="empty">Tu rutina se va a completar con actividades que te asignen tus profesores.</p>{% endfor %}
+</section>
+</div>
+<!-- MIS CLASES -->
+<div class="view" id="view-misclases">
+<section class="panel" id="misclases">
+<div class="section-head"><h3>Mis clases</h3><span>{{ my_classes|length }} materia(s)</span></div>
+<input type="text" id="search-tasks" placeholder="Buscar tarea o materia..." onkeyup="filterTasks()" style="width:100%; padding:0.7rem; border:1px solid #dedee9; border-radius:10px; margin-bottom:1rem; background:#fff;">
+{% for c in my_classes %}
+<details class="subject-block" open style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:1rem; margin-bottom:1rem;">
+<summary style="cursor:pointer;"><strong>{{ c.subject }}</strong> <small>{{ c.tasks|length }} tarea(s)</small></summary>
+{% for task in c.tasks %}
+<div class="task-row" style="margin-top:0.5rem; display: flex; justify-content:space-between; align-items:center;">
+<div>
+<div style="display: flex; align-items:center; gap:0.4rem;">
+<strong>{{ task['title'] }}</strong>
+<button type="button" class="speaker-btn" data-speak="{{ task['title'] }}" style="background:none; border:none; cursor:pointer; display:none;" title="Escuchar">🔊</button>
+</div>
+<small>{{ task['teacher_name'] }} {% if task['due_at'] %} · Entrega: {{ task['due_at'] }}{% endif %}</small>
+</div>
+{% if task['completed'] %}
+<span class="tag green">Completada</span>
+{% else %}
+<span class="tag">Pendiente</span>
+{% endif %}
+</div>
+{% endfor %}
+</details>
+{% else %}<p class="empty">Cuando tus profesores carguen tareas, vas a ver acá tus materias.</p>{% endfor %}
+</section>
+</div>
+<!-- TAREAS PENDIENTES -->
+<div class="view" id="view-pendientes">
+<section class="panel" id="pendientes">
+<div class="section-head"><h3>Tareas pendientes</h3><span>{{ pending_tasks|length }} sin entregar</span></div>
+{% for task in pending_tasks %}
+<details class="pending-item" style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:1rem; margin-bottom:1rem;">
+<summary style="cursor:pointer; display: flex; justify-content:space-between; align-items:center;">
+<div>
+<strong>{{ task['title'] }}</strong><br>
+<small>{{ task['subject'] }} · {{ task['teacher_name'] }}</small>
+</div>
+<span class="tag">Agregar entrega</span>
+</summary>
+<form class="task-form" method="post" action="{{ url_for('submit_task', task_id=task['id']) }}" enctype="multipart/form-data" style="margin-top:1rem;">
+<label>Archivo de la entrega <input type="file" name="attachment" required></label>
+<label>Comentario<textarea name="note" placeholder="Contale a tu profe cómo te fue"></textarea></label>
+<button class="primary" type="submit">Subir entrega</button>
+</form>
+</details>
+{% else %}<p class="empty">¡No tenés tareas pendientes!</p>{% endfor %}
+</section></div>
+<!-- MENSAJES -->
+<div class="view" id="view-mensajes">
+<section class="panel" id="mensajes">
+<div class="section-head"><h3>Profesores registrados</h3><span>Comunicación</span></div>
+{% for thread in teacher_threads %}
+<details class="subject-block" style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; background: #fff;">
+<summary style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+<div style="display: flex; align-items: center; gap: 0.8rem;">
+<span class="avatar mint" style="background: #e0f2fe; padding:8px; border-radius: 50%;">{{ thread.teacher['full_name'][0] }}</span>
+<strong>{{ thread.teacher['full_name'] }}</strong>
+</div>
+{% if thread.unread %} <span class="tag pink" style="background: #fdf2f8; color: #db2777; padding: 2px 8px; border-radius: 10px;">{{ thread.unread }} nuevo(s)</span> {% else %} <span class="tag">Al Día</span>{% endif %}
+</summary>
+<div class="thread-messages" style="margin-top: 1rem; max-height: 250px; overflow-y: auto; padding: 0.5rem; background: #f9fafb; border-radius: 8px;">
+{% for m in thread.messages %}
+<div class="bubble" style="margin-bottom: 0.5rem; padding: 0.5rem; background: {{ '#e0e7ff' if m['sender_id'] == user['id'] else '#fff' }}; border-radius: 8px; width: fit-content; max-width: 80%; {% if m['sender_id'] == user['id'] %}margin-left: auto; text-align: right;{% endif %}">
+<small style="color: #6b7280; display: block; font-size: 0.75rem;">{{ m['created_at'] }}</small>
+<span>{{ m['body'] }}</span>
+</div>
+{% else %}
+<p class="empty small">Todavía no hay mensajes con este profesor.</p>
+{% endfor %}
+</div>
+<form class="message-form" method="post" action="{{ url_for('send_message') }}" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+<input type="hidden" name="receiver_id" value="{{ thread.teacher['id'] }}">
+<textarea name="body" placeholder="Escribile..." required style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 8px; height: 40px;"></textarea>
+<button class="primary" style="padding: 0.5rem 1rem; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer;">Enviar</button>
+</form>
+</details>
+{% else %}<p class="empty">Todavia no hay profesores registrados disponibles.</p>{% endfor %}
+</section>
+</div>
+<!-- AVISOS -->
+<div class="view" id="view-avisos">
+<section class="panel" id="announcements-student">
+<div class="section-head"><h3>Anuncios importantes</h3><span>De tus profesores</span></div>
+{% for announcement in announcements %}
+<div class="notice"><strong>{{ announcement['title'] }}</strong><small>{{ announcement['body'] }} - {{ announcement['teacher_name'] }}</small></div>
+{% else %}<p class="empty">No hay anuncios recientes.</p>{% endfor %}
+</section>
+</div>
+<!-- CALENDARIO -->
+<div class="view" id="view-calendario">
+<section class="panel" id="calendario">
+<div class="section-head"><h3>Calendario</h3><span>{{ calendar.month_label }}</span></div>
+<table class="mini-calendar">
+<thead><tr>{% for wd in calendar.weekday_labels %}<th>{{ wd }}</th>{% endfor %}</tr></thead>
+<tbody>
+{% for week in calendar.weeks %}
+<tr>
+{% for day in week %}
+{% if day == 0 %}<td class="empty-day"></td>
+{% else %}<td class="{{ 'today' if day == calendar.today else '' }}"><span>{{ day }}</span></td>{% endif %}
+{% endfor %}
+</tr>{% endfor %}
+</tbody>
+</table>
+</section>
+</div>
+<!-- MI PROGRESO -->
+<div class="view" id="view-progreso">
+<section class="panel" id="progreso">
+<div class="section-head"><h3>Mi progreso</h3><span>{{ progress.percent }}%</span></div>
+<div class="progress-bar big"><div class="progress-fill" style="width: {{ progress.percent }}%"></div></div>
+<p class="progress-caption">Completaste {{ progress.completed }} de {{ progress.total }} tareas.</p>
+</section>
+</div>
+<!-- RECURSOS -->
+<div class="view" id="view-recursos">
+<section class="panel" id="recursos">
+<div class="section-head"><h3>Recursos de apoyo</h3><span>Glosario</span></div>
+{% for term in glossary_terms %}
+<div class="glossary-item"><strong>{{ term.term }}</strong><p>{{ term.definition }}</p></div>
+{% else %}<p class="empty">No hay términos cargados todavía.</p>{% endfor %}
+</section>
+</div>
+<!-- NECESITO AYUDA -->
+<div class="view" id="view-ayuda">
+<section class="panel" id="ayuda">
+<div class="section-head"><h3>Necesito ayuda</h3><span>Estamos para ayudarte</span></div>
+<form class="task-form" method="post" action="{{ url_for('request_help') }}">
+<label>¿Qué necesitás?<select name="option" required>{% for opt in help_options %}<option value="{{ opt.key }}">{{ opt.label }}</option>{% endfor %}</select></label>
+<label>¿A qué profesor?<select name="teacher_id" required><option value="">Elegi un profesor</option>{% for teacher in teachers %}<option value="{{ teacher['id'] }}">{{ teacher['full_name'] }}</option>{% endfor %}</select></label>
+<label>Comentario<textarea name="note" placeholder="Escribi lo que necesites"></textarea></label>
+<button class="primary" type="submit">Pedir ayuda</button>
+</form>
+</section>
+</div>
+<!-- FAMILIA -->
+<div class="view" id="view-familia">
+<section class="panel" id="familia">
+<div class="section-head"><h3>Contacto familiar</h3><span>Para urgencias</span></div>
+<form class="task-form" method="post" action="{{ url_for('create_family_contact') }}">
+<input name="contact_name" placeholder="Nombre del familiar" required>
+<select name="relationship"><option>Madre</option><option>Padre</option><option>Tutor/a</option><option>Otro</option></select>
+<input name="phone" placeholder="Teléfono">
+<button class="primary">Registrar</button>
+</form>
+</section>
+</div>
+<!-- CONFIGURACIÓN -->
+<div class="view" id="view-settings">
+<section class="panel" id="settings">
+<div class="section-head"><h3>Configuración</h3><span>Sonido y Accesibilidad</span></div>
+<div class="switch-row" style="justify-content:center; align-items:center; gap:1.2rem; margin-bottom:0.8rem;">
+<span>Tamaño de letra</span>
+<div style="display:flex; gap:0.6rem; align-items:center;">
+<button type="button" id="font-decrease" aria-label="Achicar letra" style="width:32px;height:32px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;font-weight:600;">A-</button>
+<span id="font-size-label" style="min-width:3.5ch; text-align:center; font-weight:600; color:#4f46e5;">100%</span>
+<button type="button" id="font-increase" aria-label="Agrandar letra" style="width:32px;height:32px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;font-weight:600;">A+</button>
+</div>
+</div>
+<label class="switch-row" style="justify-content:center;"><span>Activar lectura por parlantes de ayuda</span><input type="checkbox" id="voice-toggle-student" onchange="toggleVoice(this.checked)"></label>
+</section>
+</div>
+{% endif %}
+</main>
+</div>
+<script>
+function showView(name, evt) {
+  if (evt) evt.preventDefault();
+  document.querySelectorAll('.dashboard-main > .view').forEach(function(v) { v.classList.remove('active'); });
+  document.querySelectorAll('.sidebar nav a').forEach(function(a) { a.classList.remove('active'); });
+  var target = document.getElementById('view-' + name);
+  if (target) target.classList.add('active');
+  var link = document.querySelector('.sidebar nav a[data-view="' + name + '"]');
+  if (link) link.classList.add('active');
+  if (history.replaceState) history.replaceState(null, '', '#' + name);
+  window.scrollTo(0, 0);
+  return false;
+}
+
+// ---------- Tamaño de letra ----------
+var FONT_MIN = 80, FONT_MAX = 150, FONT_STEP = 10;
+
+function applyFontSize(percent) {
+  document.documentElement.style.fontSize = percent + '%';
+  localStorage.setItem('fontSizePercent', percent);
+  var label = document.getElementById('font-size-label');
+  if (label) label.textContent = percent + '%';
+}
+
+function changeFontSize(delta) {
+  var current = parseInt(localStorage.getItem('fontSizePercent'), 10) || 100;
+  var next = Math.min(FONT_MAX, Math.max(FONT_MIN, current + delta));
+  applyFontSize(next);
+}
+
+// ---------- Lectura por voz ----------
+function speakText(text) {
+  if (!text || !('speechSynthesis' in window)) return;
+  var utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'es-AR';
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+}
+
+// Lee un texto y recién DESPUÉS ejecuta el callback (por ejemplo, enviar
+// el formulario). Así el botón se escucha siempre, sin que la página
+// se recargue antes de terminar de hablar.
+function speakThenRun(text, callback) {
+  if (!text || !('speechSynthesis' in window)) { callback(); return; }
+  var done = false;
+  function finish() {
+    if (done) return;
+    done = true;
+    callback();
+  }
+  var utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'es-AR';
+  utter.onend = finish;
+  utter.onerror = finish;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+  setTimeout(finish, 4000); // seguro por si el navegador no dispara "onend"
+}
+
+function isVoiceEnabled() {
+  return localStorage.getItem('voiceEnabled') === 'true';
+}
+
+function toggleVoice(enabled) {
+  localStorage.setItem('voiceEnabled', enabled);
+  updateSpeakersVisibility(enabled);
+}
+
+function updateSpeakersVisibility(enabled) {
+  document.querySelectorAll('.speaker-btn, .voice-icon').forEach(function(el) {
+    el.style.display = enabled ? 'inline-block' : 'none';
+  });
+}
+
+// Agrega un parlantito a cada botón de la app. Si la voz está activada:
+// - si el botón envía un formulario, primero se escucha y recién después
+//   se envía (Enviar, Completar, Guardar, Publicar, etc.)
+// - si el botón solo hace una acción en pantalla (abrir un modal, cambiar
+//   de vista), se escucha y se ejecuta al mismo tiempo.
+function setupButtonVoice() {
+  document.querySelectorAll('.dashboard-main button').forEach(function(el) {
+    if (el.classList.contains('speaker-btn') || el.dataset.voiceReady === 'true') return;
+    el.dataset.voiceReady = 'true';
+
+    var icon = document.createElement('span');
+    icon.className = 'voice-icon';
+    icon.textContent = ' 🔊';
+    icon.style.marginLeft = '4px';
+    icon.style.display = isVoiceEnabled() ? 'inline-block' : 'none';
+    el.appendChild(icon);
+
+    el.addEventListener('click', function(evt) {
+      if (!isVoiceEnabled()) return;
+      var label = (el.dataset.speak || el.textContent || '').replace('🔊', '').trim();
+      if (!label) return;
+
+      var form = el.closest('form');
+      var isSubmit = form && el.type === 'submit';
+
+      if (isSubmit) {
+        evt.preventDefault();
+        speakThenRun(label, function() {
+          if (form.requestSubmit) form.requestSubmit(el);
+          else form.submit();
+        });
+      } else {
+        speakText(label);
+      }
+    });
+  });
+
+  document.querySelectorAll('.speaker-btn').forEach(function(btn) {
+    if (btn.dataset.voiceReady === 'true') return;
+    btn.dataset.voiceReady = 'true';
+    btn.addEventListener('click', function() { speakText(btn.dataset.speak || ''); });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var initial = (window.location.hash || '#home').slice(1);
+  if (!document.getElementById('view-' + initial)) initial = 'home';
+  showView(initial);
+
+  var savedFont = parseInt(localStorage.getItem('fontSizePercent'), 10) || 100;
+  applyFontSize(savedFont);
+  var decreaseBtn = document.getElementById('font-decrease');
+  var increaseBtn = document.getElementById('font-increase');
+  if (decreaseBtn) decreaseBtn.addEventListener('click', function() { changeFontSize(-FONT_STEP); });
+  if (increaseBtn) increaseBtn.addEventListener('click', function() { changeFontSize(FONT_STEP); });
+
+  var vEnabled = isVoiceEnabled();
+  var tSwitch = document.getElementById('voice-toggle-teacher');
+  var sSwitch = document.getElementById('voice-toggle-student');
+  if (tSwitch) tSwitch.checked = vEnabled;
+  if (sSwitch) sSwitch.checked = vEnabled;
+
+  setupButtonVoice();
+  updateSpeakersVisibility(vEnabled);
+});
+
+function filterTasks() {
+  var query = document.getElementById('search-tasks').value.toLowerCase();
+  document.querySelectorAll('.subject-block .task-row').forEach(function(row) {
+    row.style.display = row.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
+  });
+}
+</script>
+{% endblock %}

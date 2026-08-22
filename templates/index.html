@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-shell">
+    <section class="welcome-side">
+        <div class="brand">Conecto+<small>Aprendemos juntos</small></div>
+        <div class="welcome-orb"></div>
+        <h1>Aprendemos juntos, <br><span>cada uno a su manera.</span></h1>
+        <p>Un espacio claro, amable e inclusivo para conectar, aprender y crecer.</p>
+        <div class="safe-pill">Un entorno seguro para todos</div>
+    </section>
+    
+    <main class="auth-card">
+        {% set role = selected_role or request.args.get('role') %}
+        
+        {% if not role %}
+        <div class="eyebrow">Bienvenido a Conecto+</div>
+        <h2>¿Cómo querés ingresar?</h2>
+        <p class="muted">Elegí tu perfil para mostrarte la experiencia que necesitás.</p>
+        <div class="role-grid" style="margin-top: 2rem;">
+            <a class="role-card" href="?role=student" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 2px solid #e2e2ef; border-radius: 14px; text-decoration: none; color: inherit; margin-bottom: 1rem; background: #fafafc;">
+                <div style="font-size: 2rem;">🎓</div>
+                <div><strong>Soy alumno</strong><br><small style="color: #666;">Quiero aprender y conectar con mis profes.</small></div>
+            </a>
+            <a class="role-card" href="?role=teacher" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 2px solid #e2e2ef; border-radius: 14px; text-decoration: none; color: inherit; background: #fafafc;">
+                <div style="font-size: 2rem;">👩‍🏫</div>
+                <div><strong>Soy profesor</strong><br><small style="color: #666;">Quiero acompañar a mis estudiantes.</small></div>
+            </a>
+        </div>
+        {% else %}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <a href="{{ url_for('home') }}" style="color: #6366f1; text-decoration: none; font-weight: 600;">← Volver a elegir perfil</a>
+            <span class="tag" style="background: #eef2ff; color: #4f46e5; padding: 0.3rem 0.8rem; border-radius: 20px; font-weight: 600;">Perfil: {{ 'Alumno/a' if role == 'student' else 'Profesor/a' }}</span>
+        </div>
+
+        <div class="form-panel" style="background: #fff; padding: 1.5rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+            <div class="auth-toggle" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: #f3f4f6; padding: 4px; border-radius: 10px;">
+                <button type="button" id="btn-login" class="toggle-active" onclick="toggleAuth('login')" style="flex: 1; padding: 0.7rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; background: #fff; color: #1f2937;">Iniciar sesión</button>
+                <button type="button" id="btn-register" onclick="toggleAuth('register')" style="flex: 1; padding: 0.7rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; background: transparent; color: #4b5563;">Registrarme</button>
+            </div>
+            
+            <div id="login-panel">
+                <h3 style="margin-bottom: 1rem;">Iniciar sesión</h3>
+                <form method="post">
+                    <input type="hidden" name="role" value="{{ role }}">
+                    <input type="hidden" name="action" value="login"> 
+                    <label style="display: block; margin-bottom: 1rem;">Correo electrónico<input type="email" name="email" value="{{ email or '' }}" required style="width: 100%; padding: 0.7rem; margin-top: 0.3rem; border: 1px solid #d1d5db; border-radius: 8px;"></label>
+                    <label style="display: block; margin-bottom: 1.5rem;">Contraseña
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.3rem;">
+                            <input type="password" name="password" id="login-password" required style="width: 100%; padding: 0.7rem; border: 1px solid #d1d5db; border-radius: 8px;">
+                            <button type="button" onclick="togglePassword('login-password', this)" style="padding: 0.7rem; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer;">👁</button>
+                        </div>
+                    </label>
+                    <button class="primary" type="submit" style="width: 100%; padding: 0.8rem; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Ingresar</button>
+                </form>
+            </div>
+
+            <div id="register-panel" class="hidden-panel" style="display: none;">
+                <h3 style="margin-bottom: 1rem;">Crear cuenta nueva</h3>
+                <form method="post">
+                    <input type="hidden" name="role" value="{{ role }}">
+                    <input type="hidden" name="action" value="register"> 
+                    <label style="display: block; margin-bottom: 1rem;">Nombre completo<input name="full_name" required style="width: 100%; padding: 0.7rem; margin-top: 0.3rem; border: 1px solid #d1d5db; border-radius: 8px;"></label>
+                    <label style="display: block; margin-bottom: 1rem;">Correo electrónico<input type="email" name="email" required style="width: 100%; padding: 0.7rem; margin-top: 0.3rem; border: 1px solid #d1d5db; border-radius: 8px;"></label>
+                    <label style="display: block; margin-bottom: 1.5rem;">Contraseña
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.3rem;">
+                            <input type="password" name="password" id="reg-password" minlength="8" required style="width: 100%; padding: 0.7rem; border: 1px solid #d1d5db; border-radius: 8px;">
+                            <button type="button" onclick="togglePassword('reg-password', this)" style="padding: 0.7rem; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer;">👁</button>
+                        </div>
+                    </label>
+                    <button class="primary" type="submit" style="width: 100%; padding: 0.8rem; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Registrarme</button>
+                </form>
+            </div>
+        </div>
+        
+        <script>
+        function toggleAuth(which) {
+            var isLogin = which === 'login';
+            document.getElementById('login-panel').style.display = isLogin ? 'block' : 'none';
+            document.getElementById('register-panel').style.display = isLogin ? 'none' : 'block';
+            var btnLogin = document.getElementById('btn-login');
+            var btnReg = document.getElementById('btn-register');
+            btnLogin.style.background = isLogin ? '#fff' : 'transparent';
+            btnLogin.style.color = isLogin ? '#1f2937' : '#4b5563';
+            btnReg.style.background = !isLogin ? '#fff' : 'transparent';
+            btnReg.style.color = !isLogin ? '#1f2937' : '#4b5563';
+        }
+        function togglePassword(fieldId, btn) {
+            var input = document.getElementById(fieldId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.textContent = "🙈";
+            } else {
+                input.type = "password";
+                btn.textContent = "👁";
+            }
+        }
+        {% if show_register %}toggleAuth('register');{% endif %}
+        </script>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}
