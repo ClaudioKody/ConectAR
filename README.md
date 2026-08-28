@@ -124,3 +124,5 @@ corriendo, o falla por cualquier motivo, se usa el texto extraído tal cual
 
 Ver `HANDOFF.md` para el detalle de qué falta y cómo seguir si en algún
 momento quieren volver a una API paga (Anthropic u otra) en vez de Ollama.
+
+Commit de ramasg
