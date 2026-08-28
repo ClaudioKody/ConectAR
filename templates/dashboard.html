@@ -29,7 +29,7 @@
 <a href="#settings" data-view="settings" onclick="return showView('settings', event)"><span>Configuración</span></a>
 {% endif %}
 </nav>
-<a class="logout" href="{{ url_for('logout') }}">Cerrar sesión</a>
+<a class="logout" href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
 </aside>
 <main class="dashboard-main">
 <header class="topbar">
@@ -57,7 +57,7 @@
 </div>
 </div>
 <dialog id="new-task-modal" class="modal">
-<form method="post" action="{{ url_for('create_task') }}" enctype="multipart/form-data" class="task-form">
+<form method="post" action="{{ url_for('tasks.create_task') }}" enctype="multipart/form-data" class="task-form">
 <div class="modal-head"><h3>Nueva tarea</h3><button type="button" class="icon-close" onclick="document.getElementById('new-task-modal').close()">X</button></div>
 <label>Materia
 {% if subjects %}
@@ -87,7 +87,7 @@
 <div class="view" id="view-aula">
 <section class="panel" id="aula">
 <div class="section-head"><h3>Aula</h3><span>Materias que dictás</span></div>
-<form class="inline-form" method="post" action="{{ url_for('save_subjects') }}"><input name="subjects" value="{{ subjects|join(', ') }}" placeholder="Ej. Matemáticas, Lengua">
+<form class="inline-form" method="post" action="{{ url_for('tasks.save_subjects') }}"><input name="subjects" value="{{ subjects|join(', ') }}" placeholder="Ej. Matemáticas, Lengua">
 <button class="outline-button">Guardar materias</button>
 </form>
 <div class="chips">{% for subject in subjects %}<span>{{ subject }}</span>{% else %}<p class="empty">Todavía no registraste materias.</p>{% endfor %}</div>
@@ -118,7 +118,8 @@
 </div></div>
 <div style="display: flex; gap: 0.5rem;">
 <button type="button" class="tag" onclick="showView('progreso-profe')">Ver progreso</button>
-<form method="post" action="{{ url_for('delete_student', student_id=student['id']) }}" onsubmit="return confirm('¿Estás seguro de eliminar a este estudiante?');">
+<a href="{{ url_for('profiles.edit_profile', student_id=student['id']) }}" class="tag{% if student['id'] in students_with_profile %}{% else %} outline-button{% endif %}">{% if student['id'] in students_with_profile %}Perfil cargado ✓{% else %}Cargar perfil{% endif %}</a>
+<form method="post" action="{{ url_for('auth.delete_student', student_id=student['id']) }}" onsubmit="return confirm('¿Estás seguro de eliminar a este estudiante?');">
 <button type="submit" class="outline-button" style="color: #dc2626; border-color: #fca5a5;">Quitar</button>
 </form>
 </div>
@@ -149,7 +150,7 @@
 <p class="empty small">Todavía no hay mensajes con este alumno.</p>
 {% endfor %}
 </div>
-<form class="message-form" method="post" action="{{ url_for('send_message') }}" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+<form class="message-form" method="post" action="{{ url_for('communication.send_message') }}" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
 <input type="hidden" name="receiver_id" value="{{ thread.student['id'] }}">
 <textarea name="body" placeholder="Escribile..." required style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 8px; height: 40px;"></textarea>
 <button class="primary" style="padding: 0.5rem 1rem; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer;">Enviar</button>
@@ -169,7 +170,7 @@
 <small>{{ h['option_label'] }} {% if h['task_title'] %}: {{ h['task_title'] }}{% endif %} - {{ h['created_at'] }}</small>
 {% if h['note'] %}<p class="help-note">"{{ h['note'] }}"</p>{% endif %}
 </div>
-{% if h['status'] == 'pendiente' %}<form method="post" action="{{ url_for('attend_help_request', request_id=h['id']) }}">
+{% if h['status'] == 'pendiente' %}<form method="post" action="{{ url_for('communication.attend_help_request', request_id=h['id']) }}">
 <button class="outline-button small">Marcar atendido</button>
 </form>
 {% else %}
@@ -183,7 +184,7 @@
 <div class="view" id="view-avisos">
 <section class="panel" id="announcements">
 <div class="section-head"><h3>Avisos importantes</h3><span>Para tus alumnos</span></div>
-<form class="task-form" method="post" action="{{ url_for('create_announcement') }}">
+<form class="task-form" method="post" action="{{ url_for('communication.create_announcement') }}">
 <input name="title" placeholder="Titulo del aviso" required>
 <textarea name="body" placeholder="Mensaje importante" required></textarea>
 <select name="student_id"><option value="">Todo el curso</option>{% for student in students %}<option value="{{ student['id'] }}">{{ student['full_name'] }}</option>{% endfor %}</select>
@@ -252,6 +253,7 @@
 </div>
 </div>
 <label class="switch-row" style="justify-content:center;"><span>Activar lectura por parlantes de ayuda</span><input type="checkbox" id="voice-toggle-teacher" onchange="toggleVoice(this.checked)"></label>
+<label class="switch-row" style="justify-content:center;"><span>Activar sonido de notificación (mensajes y pedidos de ayuda)</span><input type="checkbox" id="sound-toggle-teacher" onchange="toggleSound(this.checked)"></label>
 </section>
 </div>
 {% else %}
@@ -279,7 +281,7 @@
 {% endif %}
 </div>
 {% if not task['completed'] %}
-<form method="post" action="{{ url_for('complete_task', task_id=task['id']) }}"><button class="outline-button">Completar</button></form>
+<form method="post" action="{{ url_for('tasks.complete_task', task_id=task['id']) }}"><button class="outline-button">Completar</button></form>
 {% else %}
 <span class="tag green">Completada</span>
 {% endif %}
@@ -328,7 +330,7 @@
 </div>
 <span class="tag">Agregar entrega</span>
 </summary>
-<form class="task-form" method="post" action="{{ url_for('submit_task', task_id=task['id']) }}" enctype="multipart/form-data" style="margin-top:1rem;">
+<form class="task-form" method="post" action="{{ url_for('tasks.submit_task', task_id=task['id']) }}" enctype="multipart/form-data" style="margin-top:1rem;">
 <label>Archivo de la entrega <input type="file" name="attachment" required></label>
 <label>Comentario<textarea name="note" placeholder="Contale a tu profe cómo te fue"></textarea></label>
 <button class="primary" type="submit">Subir entrega</button>
@@ -359,7 +361,7 @@
 <p class="empty small">Todavía no hay mensajes con este profesor.</p>
 {% endfor %}
 </div>
-<form class="message-form" method="post" action="{{ url_for('send_message') }}" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+<form class="message-form" method="post" action="{{ url_for('communication.send_message') }}" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
 <input type="hidden" name="receiver_id" value="{{ thread.teacher['id'] }}">
 <textarea name="body" placeholder="Escribile..." required style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 8px; height: 40px;"></textarea>
 <button class="primary" style="padding: 0.5rem 1rem; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer;">Enviar</button>
@@ -416,7 +418,7 @@
 <div class="view" id="view-ayuda">
 <section class="panel" id="ayuda">
 <div class="section-head"><h3>Necesito ayuda</h3><span>Estamos para ayudarte</span></div>
-<form class="task-form" method="post" action="{{ url_for('request_help') }}">
+<form class="task-form" method="post" action="{{ url_for('communication.request_help') }}">
 <label>¿Qué necesitás?<select name="option" required>{% for opt in help_options %}<option value="{{ opt.key }}">{{ opt.label }}</option>{% endfor %}</select></label>
 <label>¿A qué profesor?<select name="teacher_id" required><option value="">Elegi un profesor</option>{% for teacher in teachers %}<option value="{{ teacher['id'] }}">{{ teacher['full_name'] }}</option>{% endfor %}</select></label>
 <label>Comentario<textarea name="note" placeholder="Escribi lo que necesites"></textarea></label>
@@ -428,7 +430,7 @@
 <div class="view" id="view-familia">
 <section class="panel" id="familia">
 <div class="section-head"><h3>Contacto familiar</h3><span>Para urgencias</span></div>
-<form class="task-form" method="post" action="{{ url_for('create_family_contact') }}">
+<form class="task-form" method="post" action="{{ url_for('communication.create_family_contact') }}">
 <input name="contact_name" placeholder="Nombre del familiar" required>
 <select name="relationship"><option>Madre</option><option>Padre</option><option>Tutor/a</option><option>Otro</option></select>
 <input name="phone" placeholder="Teléfono">
@@ -449,6 +451,7 @@
 </div>
 </div>
 <label class="switch-row" style="justify-content:center;"><span>Activar lectura por parlantes de ayuda</span><input type="checkbox" id="voice-toggle-student" onchange="toggleVoice(this.checked)"></label>
+<label class="switch-row" style="justify-content:center;"><span>Activar sonido de notificación (mensajes y avisos)</span><input type="checkbox" id="sound-toggle-student" onchange="toggleSound(this.checked)"></label>
 </section>
 </div>
 {% endif %}
@@ -515,6 +518,59 @@ function speakThenRun(text, callback) {
 
 function isVoiceEnabled() {
   return localStorage.getItem('voiceEnabled') === 'true';
+}
+
+// ---------- Sonido de notificación ----------
+// Apagado por defecto: un sonido inesperado puede resultar tan invasivo
+// como un color fuerte para alguien con sensibilidad auditiva. La persona
+// tiene que activarlo a propósito, igual que la lectura por voz.
+function isSoundEnabled() {
+  return localStorage.getItem('soundEnabled') === 'true';
+}
+
+function toggleSound(enabled) {
+  localStorage.setItem('soundEnabled', enabled);
+  if (enabled) playNotificationSound(); // un pantallazo suave de "así suena"
+}
+
+// Genera el sonido con la API de audio del navegador (sin archivos externos).
+// Es un timbre de dos notas, corto y suave, pensado para avisar sin sobresaltar:
+// nada de volumen alto, ni tonos agudos o metálicos.
+function playNotificationSound() {
+  if (!isSoundEnabled()) return;
+  try {
+    var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    var ctx = new AudioContextClass();
+    var now = ctx.currentTime;
+
+    [523.25, 659.25].forEach(function (freq, i) { // dos notas suaves (Do, Mi)
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      var start = now + i * 0.14;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.08, start + 0.03); // volumen bajo a propósito
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 0.4);
+    });
+  } catch (e) {
+    // Si el navegador bloquea el audio (por ejemplo, sin interacción previa
+    // del usuario), no pasa nada: simplemente no suena.
+  }
+}
+
+// Compara la cantidad de novedades (mensajes sin leer + pedidos de ayuda
+// pendientes) contra la última vez que se cargó el panel. Si aumentó,
+// suena el aviso. No es tiempo real (no hay websockets en este proyecto),
+// pero alcanza para notificar en cada recarga/cambio de vista.
+function checkForNewNotifications(currentCount) {
+  var previous = parseInt(localStorage.getItem('lastNotificationCount') || '0', 10);
+  if (currentCount > previous) playNotificationSound();
+  localStorage.setItem('lastNotificationCount', String(currentCount));
 }
 
 function toggleVoice(enabled) {
@@ -592,6 +648,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   setupButtonVoice();
   updateSpeakersVisibility(vEnabled);
+
+  var soundEnabled = isSoundEnabled();
+  var tSoundSwitch = document.getElementById('sound-toggle-teacher');
+  var sSoundSwitch = document.getElementById('sound-toggle-student');
+  if (tSoundSwitch) tSoundSwitch.checked = soundEnabled;
+  if (sSoundSwitch) sSoundSwitch.checked = soundEnabled;
+  checkForNewNotifications({{ (unread_total or 0) + (pending_help_count or 0) }});
 });
 
 function filterTasks() {

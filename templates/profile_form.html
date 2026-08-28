@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-shell" style="grid-template-columns:1fr;max-width:720px;margin:0 auto;padding:3rem 1.5rem">
+  <div class="auth-card">
+    <span class="eyebrow">Perfil de aprendizaje</span>
+    <h2>{{ student.full_name }}</h2>
+    <p class="muted">No es un diagnóstico médico: es una guía educativa para adaptar
+      las tareas de este alumno. Se usa para personalizar la adaptación con IA.</p>
+
+    <form method="POST" class="form-panel">
+      <div class="subhead">
+        <h3>Comunicación</h3>
+        <label><input type="checkbox" name="instrucciones_escritas" {{ 'checked' if perfil and perfil['instrucciones_escritas'] }}> {{ etiquetas['instrucciones_escritas'] }}</label>
+        <label><input type="checkbox" name="instrucciones_cortas" {{ 'checked' if perfil and perfil['instrucciones_cortas'] }}> {{ etiquetas['instrucciones_cortas'] }}</label>
+        <label><input type="checkbox" name="dificultad_consignas_ambiguas" {{ 'checked' if perfil and perfil['dificultad_consignas_ambiguas'] }}> {{ etiquetas['dificultad_consignas_ambiguas'] }}</label>
+      </div>
+
+      <div class="subhead">
+        <h3>Organización</h3>
+        <label><input type="checkbox" name="necesita_anticipacion" {{ 'checked' if perfil and perfil['necesita_anticipacion'] }}> {{ etiquetas['necesita_anticipacion'] }}</label>
+        <label><input type="checkbox" name="funciona_con_rutinas" {{ 'checked' if perfil and perfil['funciona_con_rutinas'] }}> {{ etiquetas['funciona_con_rutinas'] }}</label>
+        <label><input type="checkbox" name="necesita_pasos_pequenos" {{ 'checked' if perfil and perfil['necesita_pasos_pequenos'] }}> {{ etiquetas['necesita_pasos_pequenos'] }}</label>
+      </div>
+
+      <div class="subhead">
+        <h3>Sensibilidad</h3>
+        <label><input type="checkbox" name="sensible_ruido" {{ 'checked' if perfil and perfil['sensible_ruido'] }}> {{ etiquetas['sensible_ruido'] }}</label>
+        <label><input type="checkbox" name="necesita_pausas" {{ 'checked' if perfil and perfil['necesita_pausas'] }}> {{ etiquetas['necesita_pausas'] }}</label>
+        <label><input type="checkbox" name="preferencia_visual" {{ 'checked' if perfil and perfil['preferencia_visual'] }}> {{ etiquetas['preferencia_visual'] }}</label>
+      </div>
+
+      <div class="task-actions" style="margin-top:1.5rem">
+        <button type="submit" class="primary">Guardar perfil</button>
+        <a href="{{ url_for('dashboard.dashboard') }}#students" class="outline-button">Volver</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

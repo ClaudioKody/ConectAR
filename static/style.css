@@ -1,89 +1,277 @@
-*{box-sizing:border-box} :root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#20213a;background:#fbfbfe}body{margin:0;background:linear-gradient(135deg,#f0edff,#fff 48%,#effcf7);min-height:100vh}a{text-decoration:none;color:inherit}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0}.auth-shell{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:4rem 6vw;gap:5rem}.welcome-side{max-width:560px}.brand{font-size:1.35rem;font-weight:800}.brand small,.profile-mini small{display:block;font-size:.72rem;color:#777a91;font-weight:500;margin-top:.2rem}.welcome-orb{width:240px;height:180px;border-radius:48% 52% 45% 55%;background:#f7a174;display:grid;place-items:center;font-size:4rem;margin:6rem 0 2rem;color:#25213c;box-shadow:0 18px 40px #f7a17433}.welcome-side h1{font-size:clamp(2.2rem,4vw,4rem);line-height:1.05;font-weight:500;margin:0}.welcome-side h1 span{color:#6548ce}.welcome-side p{color:#6f7184;max-width:500px;line-height:1.7}.safe-pill,.eyebrow{display:inline-flex;background:#eee9ff;color:#6548ce;border-radius:999px;padding:.55rem .85rem;font-size:.78rem;font-weight:700}.auth-card{background:#fff;border:1px solid #ecebf3;border-radius:26px;padding:2.3rem;max-width:540px;width:100%;box-shadow:0 20px 50px #332b6b12}.auth-card h2{font-size:2rem;margin:.9rem 0 .3rem}.muted{color:#818294}.role-grid{display:grid;gap:.8rem;margin:2rem 0}.role-card{display:grid;grid-template-columns:45px 1fr auto;align-items:center;gap:1rem;border:1px solid #ebeaf1;border-radius:17px;padding:1rem;transition:.18s}.role-card:hover,.role-card.selected{border-color:#8364de;box-shadow:0 7px 20px #8364de18}.role-card>span{display:grid;place-items:center;background:#e9f9f0;color:#168c72;border-radius:13px;width:42px;height:42px;font-size:1.3rem}.role-card:nth-child(2)>span{background:#eee8ff;color:#6548ce}.role-card small{display:block;color:#858699;margin-top:.25rem}.form-panel{border-top:1px solid #eeeef4;padding-top:1.4rem}.form-panel h3{margin:.2rem 0 1rem}.form-panel form,.task-form,.message-form{display:grid;gap:.75rem}.form-panel label,.task-form label,.message-form label,.panel>label{display:grid;gap:.35rem;color:#4b4d64;font-size:.82rem;font-weight:700}.form-panel input,.task-form input,.task-form textarea,.task-form select,.message-form textarea,.inline-form input,.panel select,.panel input[type=range]{border:1px solid #dedee9;border-radius:10px;padding:.72rem;background:#fff;color:#292b40}.primary,.outline-button{border-radius:11px;padding:.75rem 1rem;font-weight:800}.primary{background:#6548ce;color:#fff}.outline-button{background:#fff;border:1px solid #cfc8f1;color:#6548ce}.form-divider{text-align:center;color:#999;margin:1.2rem}.app-shell{display:grid;grid-template-columns:245px 1fr;min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;background:#fff;border-right:1px solid #eeeef3;padding:2rem 1.2rem;display:flex;flex-direction:column;gap:1.6rem}.brand.compact{font-size:1.1rem;padding:.5rem}.profile-mini{background:#f2efff;padding:1rem;border-radius:14px}.sidebar nav{display:grid;gap:.35rem}.sidebar nav a{display:flex;gap:.75rem;align-items:center;padding:.8rem;border-radius:10px;color:#484a61}.sidebar nav a:hover,.sidebar nav a.active{background:#eee9ff;color:#5538bd;font-weight:800}.logout{margin-top:auto;color:#777a91;font-size:.85rem}.dashboard-main{padding:2.3rem 3vw;min-width:0}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.8rem}.topbar h1{margin:.5rem 0 .1rem;font-size:2rem}.topbar h1 span,.hero h2 span{color:#6548ce}.topbar small{color:#838497}.top-actions{display:flex;align-items:center;gap:1rem}.notification{font-size:1.5rem;color:#6548ce}.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#dff7ec;color:#188a70;font-weight:800}.hero{border-radius:20px;padding:2.3rem;display:flex;align-items:center;justify-content:space-between;overflow:hidden}.student-hero{background:#e4f8ee}.teacher-hero{background:#eee9ff}.hero h2{font-size:2rem;line-height:1.25;margin:.6rem 0}.hero p:not(.eyebrow){color:#596078;line-height:1.6;max-width:620px}.hero-art{font-size:2.2rem;letter-spacing:.7rem;white-space:nowrap}.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:1.2rem 0}.quick{padding:1.2rem;border-radius:16px;display:grid;gap:.25rem;font-size:1.5rem}.quick strong{font-size:.9rem}.quick small{font-size:.72rem;color:#6f7184}.violet{background:#eee9ff;color:#5b42bd}.blue{background:#e6f1ff;color:#2772be}.mint{background:#e5f7ef;color:#208567}.pink{background:#fff0f3;color:#c34a70}.content-grid{display:grid;grid-template-columns:1.45fr .85fr;gap:1.2rem}.stack{display:grid;gap:1.2rem;align-content:start}.panel{background:#fff;border:1px solid #ecebf3;border-radius:16px;padding:1.25rem;box-shadow:0 8px 25px #25213c08}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}.section-head h3{margin:0}.section-head span{color:#7560c9;font-size:.8rem;font-weight:700}.inline-form{display:flex;gap:.6rem;margin-bottom:1rem}.inline-form input{flex:1}.chips{display:flex;gap:.5rem;flex-wrap:wrap}.chips span,.tag{background:#eee9ff;color:#6048bd;border-radius:999px;padding:.4rem .7rem;font-size:.75rem;font-weight:800}.subhead{border-top:1px solid #eeeef3;padding-top:1.2rem;margin-top:1.4rem}.task-form textarea,.message-form textarea{min-height:74px;resize:vertical}.person-row,.task-row,.notice{display:flex;align-items:center;gap:.8rem;padding:.75rem 0;border-bottom:1px solid #f0f0f5}.person-row:last-child,.task-row:last-child{border-bottom:0}.person-row>div,.task-row>div{flex:1}.person-row small,.task-row small,.notice small,.message-form small{display:block;color:#7e8091;margin-top:.2rem}.link-row{color:#292b40}.link-row:hover{background:#f7f6ff}.avatar.mint{background:#e2f7ed}.notice{display:grid;gap:.15rem;background:#fff9e8;border-radius:11px;padding:.8rem;margin:.5rem 0;border:1px solid #f4e8bd}.message-form{border-bottom:1px solid #eeeef3;padding:1rem 0}.message-form:last-child{border-bottom:0}.empty{color:#818294;background:#fafafd;border:1px dashed #deddea;border-radius:12px;padding:1rem;text-align:center}.flash-stack{position:fixed;z-index:10;top:1rem;right:1rem;display:grid;gap:.5rem}.flash{padding:.85rem 1rem;border-radius:10px;background:#fff;box-shadow:0 10px 24px #2b244718}.flash.success{border-left:4px solid #22a07d}.flash.warning{border-left:4px solid #d79b1e}@media(max-width:900px){.auth-shell{grid-template-columns:1fr;padding:2rem 1.2rem;gap:2rem}.welcome-orb{margin:2rem 0 1rem;width:180px;height:130px}.app-shell{grid-template-columns:1fr}.sidebar{position:static;height:auto;padding:1rem;display:flex}.sidebar nav{display:flex;overflow-x:auto}.sidebar nav a{white-space:nowrap}.dashboard-main{padding:1.2rem}.content-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:repeat(2,1fr)}.hero{align-items:flex-start}.hero-art{font-size:1.6rem}.topbar h1{font-size:1.6rem}}@media(max-width:560px){.quick-grid{grid-template-columns:1fr 1fr}.hero{padding:1.3rem}.hero h2{font-size:1.5rem}.inline-form{display:grid}.auth-card{padding:1.3rem}}
+/* ============================================================
+   CONECTO+ — sistema de diseño calmo, pensado para chicos con
+   TEA y dificultades de procesamiento sensorial: bajo contraste
+   agresivo, sin colores saturados, tipografía diseñada para
+   máxima legibilidad, movimiento mínimo.
+   ============================================================ */
 
-/* --- Agregado: modal de nueva tarea --- */
-dialog.modal{border:0;border-radius:20px;padding:0;max-width:560px;width:92vw;box-shadow:0 30px 80px #25213c33;color:#20213a}
-dialog.modal::backdrop{background:#20213a66;backdrop-filter:blur(2px)}
+:root{
+  /* --- Paleta: 5 colores con un propósito cada uno --- */
+  --color-bg: #F2F4F1;           /* fondo general, verde-gris muy suave */
+  --color-card: #FFFFFF;         /* tarjetas y paneles */
+  --color-ink: #22312C;          /* texto principal, verde-tinta (no negro puro) */
+  --color-muted: #6B7873;        /* texto secundario */
+  --color-border: #DDE3DD;       /* bordes suaves */
+
+  --color-primary: #C98A2B;      /* acciones principales — mostaza cálido */
+  --color-primary-soft: #F5E9D2; /* fondo suave del acento principal */
+  --color-primary-ink: #7A5518;  /* texto sobre fondo suave del primario */
+
+  --color-secondary: #4C8577;    /* progreso, confirmaciones — verde salvia */
+  --color-secondary-soft: #E1EDE9;
+  --color-secondary-ink: #2F5349;
+
+  --color-accent: #B25B72;       /* ayuda / atención — ciruela apagado, nunca rojo puro */
+  --color-accent-soft: #F5E3E8;
+  --color-accent-ink: #7C3B4E;
+
+  --color-info: #4A7583;         /* cuarto tono neutro, para variar chips sin sumar ruido */
+  --color-info-soft: #E3ECEE;
+  --color-info-ink: #2E5560;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-soft: 0 8px 25px rgba(34,49,44,0.06);
+}
+
+/* Respeta si la persona pidió menos movimiento en su sistema operativo */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+
+*{box-sizing:border-box}
+:root{font-family:var(--font-body);color:var(--color-ink);background:var(--color-bg)}
+body{margin:0;background:var(--color-bg);min-height:100vh}
+a{text-decoration:none;color:inherit}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0}
+h1,h2,h3{font-family:var(--font-display);font-weight:600}
+
+/* Foco de teclado visible en todo — accesibilidad, no decoración */
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:3px solid var(--color-primary);outline-offset:2px;border-radius:4px
+}
+
+/* ---------- Pantalla de login / registro ---------- */
+.auth-shell{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:4rem 6vw;gap:5rem}
+.welcome-side{max-width:560px}
+.brand{font-family:var(--font-display);font-size:1.4rem;font-weight:600}
+.brand small,.profile-mini small{display:block;font-size:.72rem;color:var(--color-muted);font-weight:500;margin-top:.2rem;font-family:var(--font-body)}
+
+/* Elemento de firma: "puntos conectados", eco del nombre Conecto+.
+   Reemplaza el blob decorativo genérico por algo que representa
+   el concepto real de la app — dos puntos unidos por un puente. */
+.welcome-orb{
+  width:240px;height:180px;margin:6rem 0 2rem;position:relative;
+  background:
+    radial-gradient(circle at 30% 55%, var(--color-secondary) 0 22px, transparent 23px),
+    radial-gradient(circle at 78% 40%, var(--color-primary) 0 26px, transparent 27px),
+    repeating-linear-gradient(100deg, var(--color-border) 0 6px, transparent 6px 16px);
+  background-repeat:no-repeat;
+  border-radius:var(--radius-lg);
+}
+.welcome-side h1{font-family:var(--font-display);font-size:clamp(2.1rem,4vw,3.6rem);line-height:1.15;font-weight:600;margin:0}
+.welcome-side h1 span{color:var(--color-primary)}
+.welcome-side p{color:var(--color-muted);max-width:500px;line-height:1.7}
+.safe-pill,.eyebrow{display:inline-flex;background:var(--color-secondary-soft);color:var(--color-secondary-ink);border-radius:999px;padding:.55rem .85rem;font-size:.78rem;font-weight:700}
+.auth-card{background:var(--color-card);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:2.3rem;max-width:540px;width:100%;box-shadow:var(--shadow-soft)}
+.auth-card h2{font-size:1.9rem;margin:.9rem 0 .3rem}
+.muted{color:var(--color-muted)}
+
+.role-grid{display:grid;gap:.8rem;margin:2rem 0}
+.role-card{display:grid;grid-template-columns:45px 1fr auto;align-items:center;gap:1rem;border:1px solid var(--color-border);border-radius:var(--radius-md);padding:1rem;transition:border-color .18s,box-shadow .18s}
+.role-card:hover,.role-card.selected{border-color:var(--color-primary);box-shadow:0 6px 16px rgba(201,138,43,0.14)}
+.role-card>span{display:grid;place-items:center;background:var(--color-secondary-soft);color:var(--color-secondary-ink);border-radius:13px;width:42px;height:42px;font-size:1.3rem}
+.role-card:nth-child(2)>span{background:var(--color-primary-soft);color:var(--color-primary-ink)}
+.role-card small{display:block;color:var(--color-muted);margin-top:.25rem}
+
+.form-panel{border-top:1px solid var(--color-border);padding-top:1.4rem}
+.form-panel h3{margin:.2rem 0 1rem}
+.form-panel form,.task-form,.message-form{display:grid;gap:.75rem}
+.form-panel label,.task-form label,.message-form label,.panel>label{display:grid;gap:.35rem;color:var(--color-muted);font-size:.82rem;font-weight:700}
+.form-panel input,.task-form input,.task-form textarea,.task-form select,.message-form textarea,.inline-form input,.panel select,.panel input[type=range]{
+  border:1px solid var(--color-border);border-radius:var(--radius-sm);padding:.72rem;background:var(--color-card);color:var(--color-ink)
+}
+.primary,.outline-button{border-radius:11px;padding:.75rem 1rem;font-weight:700;font-family:var(--font-body)}
+.primary{background:var(--color-primary);color:#fff}
+.primary:hover{background:var(--color-primary-ink)}
+.outline-button{background:var(--color-card);border:1px solid var(--color-border);color:var(--color-primary-ink)}
+.form-divider{text-align:center;color:var(--color-muted);margin:1.2rem}
+
+/* ---------- Layout del dashboard ---------- */
+.app-shell{display:grid;grid-template-columns:245px 1fr;min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;background:var(--color-card);border-right:1px solid var(--color-border);padding:2rem 1.2rem;display:flex;flex-direction:column;gap:1.6rem}
+.brand.compact{font-size:1.1rem;padding:.5rem}
+.profile-mini{background:var(--color-secondary-soft);padding:1rem;border-radius:var(--radius-md)}
+.sidebar nav{display:grid;gap:.35rem}
+.sidebar nav a{display:flex;gap:.75rem;align-items:center;padding:.8rem;border-radius:10px;color:var(--color-ink);position:relative}
+.sidebar nav a:hover,.sidebar nav a.active{background:var(--color-primary-soft);color:var(--color-primary-ink);font-weight:700}
+.logout{margin-top:auto;color:var(--color-muted);font-size:.85rem}
+.dashboard-main{padding:2.3rem 3vw;min-width:0}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.8rem}
+.topbar h1{margin:.5rem 0 .1rem;font-size:1.9rem}
+.topbar h1 span,.hero h2 span{color:var(--color-primary)}
+.topbar small{color:var(--color-muted)}
+.top-actions{display:flex;align-items:center;gap:1rem}
+.notification{font-size:1.5rem;color:var(--color-primary);position:relative}
+.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--color-secondary-soft);color:var(--color-secondary-ink);font-weight:700}
+.avatar.mint{background:var(--color-secondary-soft)}
+
+/* Hero: divisor de puntos sutil arriba, en vez de un color de fondo saturado */
+.hero{border-radius:var(--radius-lg);padding:2.3rem;display:flex;align-items:center;justify-content:space-between;overflow:hidden;position:relative;border-top:3px dotted var(--color-border)}
+.student-hero{background:var(--color-secondary-soft)}
+.teacher-hero{background:var(--color-primary-soft)}
+.hero h2{font-family:var(--font-display);font-size:1.9rem;line-height:1.3;margin:.6rem 0;font-weight:600}
+.hero p:not(.eyebrow){color:var(--color-muted);line-height:1.6;max-width:620px}
+.hero-art{font-size:2rem;letter-spacing:.6rem;white-space:nowrap;opacity:.85}
+
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:1.2rem 0}
+.quick{padding:1.2rem;border-radius:var(--radius-md);display:grid;gap:.25rem;font-size:1.4rem}
+.quick strong{font-size:.9rem;font-family:var(--font-body)}
+.quick small{font-size:.72rem;color:var(--color-muted)}
+.violet{background:var(--color-secondary-soft);color:var(--color-secondary-ink)}
+.blue{background:var(--color-info-soft);color:var(--color-info-ink)}
+.mint{background:var(--color-secondary-soft);color:var(--color-secondary-ink)}
+.pink{background:var(--color-accent-soft);color:var(--color-accent-ink)}
+
+.content-grid{display:grid;grid-template-columns:1.45fr .85fr;gap:1.2rem}
+.stack{display:grid;gap:1.2rem;align-content:start}
+.panel{background:var(--color-card);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:1.25rem;box-shadow:var(--shadow-soft)}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;position:relative}
+.section-head h3{margin:0}
+.section-head span{color:var(--color-secondary-ink);font-size:.8rem;font-weight:700}
+.inline-form{display:flex;gap:.6rem;margin-bottom:1rem}
+.inline-form input{flex:1}
+.chips{display:flex;gap:.5rem;flex-wrap:wrap}
+.chips span,.tag{background:var(--color-secondary-soft);color:var(--color-secondary-ink);border-radius:999px;padding:.4rem .7rem;font-size:.75rem;font-weight:700}
+.tag.pink{background:var(--color-accent-soft);color:var(--color-accent-ink)}
+.subhead{border-top:1px solid var(--color-border);padding-top:1.2rem;margin-top:1.4rem}
+.task-form textarea,.message-form textarea{min-height:74px;resize:vertical}
+.person-row,.task-row,.notice{display:flex;align-items:center;gap:.8rem;padding:.75rem 0;border-bottom:1px solid var(--color-border)}
+.person-row:last-child,.task-row:last-child{border-bottom:0}
+.person-row>div,.task-row>div{flex:1}
+.person-row small,.task-row small,.notice small,.message-form small{display:block;color:var(--color-muted);margin-top:.2rem}
+.link-row{color:var(--color-ink)}
+.link-row:hover{background:var(--color-bg)}
+.notice{display:grid;gap:.15rem;background:var(--color-primary-soft);border-radius:11px;padding:.8rem;margin:.5rem 0;border:1px solid var(--color-border)}
+.message-form{border-bottom:1px solid var(--color-border);padding:1rem 0}
+.message-form:last-child{border-bottom:0}
+.empty{color:var(--color-muted);background:var(--color-bg);border:1px dashed var(--color-border);border-radius:12px;padding:1rem;text-align:center}
+
+.flash-stack{position:fixed;z-index:10;top:1rem;right:1rem;display:grid;gap:.5rem}
+.flash{padding:.85rem 1rem;border-radius:10px;background:var(--color-card);box-shadow:var(--shadow-soft)}
+.flash.success{border-left:4px solid var(--color-secondary)}
+.flash.warning{border-left:4px solid var(--color-primary)}
+
+@media(max-width:900px){
+  .auth-shell{grid-template-columns:1fr;padding:2rem 1.2rem;gap:2rem}
+  .welcome-orb{margin:2rem 0 1rem;width:180px;height:130px}
+  .app-shell{grid-template-columns:1fr}
+  .sidebar{position:static;height:auto;padding:1rem;display:flex}
+  .sidebar nav{display:flex;overflow-x:auto}
+  .sidebar nav a{white-space:nowrap}
+  .dashboard-main{padding:1.2rem}
+  .content-grid{grid-template-columns:1fr}
+  .quick-grid{grid-template-columns:repeat(2,1fr)}
+  .hero{align-items:flex-start}
+  .hero-art{font-size:1.5rem}
+  .topbar h1{font-size:1.5rem}
+}
+@media(max-width:560px){
+  .quick-grid{grid-template-columns:1fr 1fr}
+  .hero{padding:1.3rem}
+  .hero h2{font-size:1.4rem}
+  .inline-form{display:grid}
+  .auth-card{padding:1.3rem}
+}
+
+/* ---------- Modal de nueva tarea ---------- */
+dialog.modal{border:0;border-radius:var(--radius-lg);padding:0;max-width:560px;width:92vw;box-shadow:0 30px 80px rgba(34,49,44,0.2);color:var(--color-ink)}
+dialog.modal::backdrop{background:rgba(34,49,44,0.4);backdrop-filter:blur(2px)}
 .modal-head{display:flex;justify-content:space-between;align-items:center;padding:1.4rem 1.4rem 0}
 .modal-head h3{margin:0}
-.icon-close{background:#f3f2fa;border-radius:50%;width:32px;height:32px;color:#5b5d74;font-weight:800;line-height:1}
+.icon-close{background:var(--color-bg);border-radius:50%;width:32px;height:32px;color:var(--color-muted);font-weight:700;line-height:1}
 dialog.modal form.task-form{padding:1.4rem}
-dialog.modal .hint{color:#8b8da0;font-weight:500}
+dialog.modal .hint{color:var(--color-muted);font-weight:500}
 
-/* --- Agregado: badges de notificaciones --- */
-.notification{position:relative}
-.badge{position:absolute;top:-8px;right:-10px;background:#e0507b;color:#fff;border-radius:999px;font-size:.62rem;padding:.12rem .4rem;font-weight:800;min-width:15px;text-align:center}
-.nav-badge{background:#e0507b;color:#fff;border-radius:999px;font-size:.62rem;padding:.1rem .38rem;font-weight:800;margin-left:.4rem}
-.tag.pink{background:#fff0f3;color:#c34a70}
+/* ---------- Badges de notificaciones ---------- */
+.badge{position:absolute;top:-8px;right:-10px;background:var(--color-accent);color:#fff;border-radius:999px;font-size:.62rem;padding:.12rem .4rem;font-weight:700;min-width:15px;text-align:center}
+.nav-badge{background:var(--color-accent);color:#fff;border-radius:999px;font-size:.62rem;padding:.1rem .38rem;font-weight:700;margin-left:.4rem}
 
-/* --- Agregado: hilos de conversación --- */
-.thread{border-bottom:1px solid #eeeef3;padding:1rem 0}
+/* ---------- Hilos de conversación ---------- */
+.thread{border-bottom:1px solid var(--color-border);padding:1rem 0}
 .thread:last-child{border-bottom:0}
 .thread-messages{display:grid;gap:.4rem;margin:.7rem 0;max-height:160px;overflow-y:auto}
-.bubble{background:#f2efff;color:#3a2f66;border-radius:12px;padding:.55rem .8rem;font-size:.85rem;max-width:85%;justify-self:start}
-.bubble.mine{background:#6548ce;color:#fff;justify-self:end}
+.bubble{background:var(--color-bg);color:var(--color-ink);border-radius:12px;padding:.55rem .8rem;font-size:.85rem;max-width:85%;justify-self:start}
+.bubble.mine{background:var(--color-primary);color:#fff;justify-self:end}
 .empty.small{padding:.6rem;font-size:.8rem}
 
-/* --- Agregado: tareas adaptadas paso a paso --- */
+/* ---------- Tareas adaptadas paso a paso ---------- */
 .task-row.adapted{align-items:flex-start}
-.step-list{margin:.6rem 0 0;padding-left:1.2rem;display:grid;gap:.35rem;color:#3a3c55;font-size:.88rem}
+.step-list{margin:.6rem 0 0;padding-left:1.2rem;display:grid;gap:.35rem;color:var(--color-ink);font-size:.88rem}
 .step-list li{line-height:1.5}
-.task-description{margin:.6rem 0 0;color:#4b4d64;font-size:.88rem;line-height:1.6}
+.task-description{margin:.6rem 0 0;color:var(--color-muted);font-size:.88rem;line-height:1.6}
 .task-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.7rem}
 
-/* --- Agregado: calendario mensual simplificado --- */
+/* ---------- Calendario mensual ---------- */
 .mini-calendar{width:100%;border-collapse:collapse;margin:.6rem 0}
-.mini-calendar th{font-size:.68rem;color:#9a9bb0;font-weight:800;padding:.3rem 0}
-.mini-calendar td{text-align:center;padding:.4rem 0;font-size:.82rem;color:#4b4d64;position:relative;border-radius:8px}
-.mini-calendar td.today span{background:#6548ce;color:#fff;border-radius:50%;display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center}
-.mini-calendar td.has-event{font-weight:800;color:#6548ce}
-.mini-calendar td .dot{display:block;width:5px;height:5px;border-radius:50%;background:#e0507b;margin:2px auto 0}
+.mini-calendar th{font-size:.68rem;color:var(--color-muted);font-weight:700;padding:.3rem 0}
+.mini-calendar td{text-align:center;padding:.4rem 0;font-size:.82rem;color:var(--color-ink);position:relative;border-radius:8px}
+.mini-calendar td.today span{background:var(--color-primary);color:#fff;border-radius:50%;display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center}
+.mini-calendar td.has-event{font-weight:700;color:var(--color-primary-ink)}
+.mini-calendar td .dot{display:block;width:5px;height:5px;border-radius:50%;background:var(--color-accent);margin:2px auto 0}
 .mini-calendar td.empty-day{color:transparent}
-.hint{color:#8b8da0;font-size:.78rem;margin:.4rem 0 0}
+.hint{color:var(--color-muted);font-size:.78rem;margin:.4rem 0 0}
 
-/* --- Agregado: barras de progreso --- */
-.progress-row{padding:.7rem 0;border-bottom:1px solid #f0f0f5}
+/* ---------- Barras de progreso ---------- */
+.progress-row{padding:.7rem 0;border-bottom:1px solid var(--color-border)}
 .progress-row:last-child{border-bottom:0}
 .progress-row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;font-size:.85rem}
-.progress-row-head small{color:#7e8091}
-.progress-bar{background:#eeeef6;border-radius:999px;height:10px;overflow:hidden}
+.progress-row-head small{color:var(--color-muted)}
+.progress-bar{background:var(--color-bg);border-radius:999px;height:10px;overflow:hidden}
 .progress-bar.big{height:16px;margin:.6rem 0}
-.progress-fill{background:linear-gradient(90deg,#6548ce,#22a07d);height:100%;border-radius:999px;transition:width .3s}
-.progress-caption{color:#596078;font-size:.85rem;line-height:1.5;margin-top:.6rem}
+.progress-fill{background:var(--color-secondary);height:100%;border-radius:999px;transition:width .3s}
+.progress-caption{color:var(--color-muted);font-size:.85rem;line-height:1.5;margin-top:.6rem}
 
-/* --- Agregado: glosario --- */
-.glossary-item{padding:.7rem 0;border-bottom:1px solid #f0f0f5}
+/* ---------- Glosario ---------- */
+.glossary-item{padding:.7rem 0;border-bottom:1px solid var(--color-border)}
 .glossary-item:last-child{border-bottom:0}
-.glossary-item strong{color:#5538bd}
-.glossary-item p{margin:.25rem 0 0;color:#4b4d64;font-size:.85rem;line-height:1.5}
+.glossary-item strong{color:var(--color-primary-ink)}
+.glossary-item p{margin:.25rem 0 0;color:var(--color-muted);font-size:.85rem;line-height:1.5}
 
-/* --- Agregado: pedidos de ayuda --- */
-.help-row{display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;padding:.75rem 0;border-bottom:1px solid #f0f0f5}
+/* ---------- Pedidos de ayuda ---------- */
+.help-row{display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;padding:.75rem 0;border-bottom:1px solid var(--color-border)}
 .help-row:last-child{border-bottom:0}
 .help-row.attended{opacity:.65}
-.help-row small{color:#7e8091}
-.help-note{margin:.35rem 0 0;color:#4b4d64;font-size:.85rem;font-style:italic}
+.help-row small{color:var(--color-muted)}
+.help-note{margin:.35rem 0 0;color:var(--color-muted);font-size:.85rem;font-style:italic}
 .outline-button.small{padding:.5rem .75rem;font-size:.75rem}
 
-/* --- Agregado: avisos de alumnos --- */
-.notice-student{background:#fff0f3;border-color:#f6c6d2}
-.notice-student p{margin:.4rem 0;color:#4b4d64;font-size:.85rem;line-height:1.5}
+/* ---------- Avisos de alumnos ---------- */
+.notice-student{background:var(--color-accent-soft);border-color:var(--color-border)}
+.notice-student p{margin:.4rem 0;color:var(--color-ink);font-size:.85rem;line-height:1.5}
 
-/* --- Agregado: Mis clases / Tareas pendientes plegables --- */
-.subject-block{border-bottom:1px solid #f0f0f5;padding:.6rem 0}
+/* ---------- Mis clases / tareas pendientes plegables ---------- */
+.subject-block{border-bottom:1px solid var(--color-border);padding:.6rem 0}
 .subject-block:last-child{border-bottom:0}
-.subject-block summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;font-weight:800}
+.subject-block summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;font-weight:700}
 .subject-block summary::-webkit-details-marker{display:none}
-.subject-block summary small{color:#7e8091;font-weight:600}
-.pending-item{border:1px solid #ecebf3;border-radius:14px;padding:.4rem .9rem;margin-bottom:.7rem}
+.subject-block summary small{color:var(--color-muted);font-weight:600}
+.pending-item{border:1px solid var(--color-border);border-radius:var(--radius-md);padding:.4rem .9rem;margin-bottom:.7rem}
 .pending-item summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:.6rem 0}
 .pending-item summary::-webkit-details-marker{display:none}
-.pending-item summary small{display:block;color:#7e8091;margin-top:.2rem}
+.pending-item summary small{display:block;color:var(--color-muted);margin-top:.2rem}
 .pending-item form.task-form{padding-bottom:.8rem}
 
-/* --- Agregado: accesibilidad (contraste, interfaz simplificada) --- */
+/* ---------- Accesibilidad: contraste e interfaz simplificada ---------- */
 .switch-row{display:flex !important;flex-direction:row;justify-content:space-between;align-items:center}
-html.contrast-medium body{background:#e9e9ee;filter:contrast(1.05)}
-html.contrast-medium .panel,html.contrast-medium .auth-card{border-color:#c9c9d6}
+html.contrast-medium body{background:#EAEAE7;filter:contrast(1.05)}
+html.contrast-medium .panel,html.contrast-medium .auth-card{border-color:#B9C1B8}
 html.contrast-high body{background:#fff;filter:none}
 html.contrast-high{color:#000}
 html.contrast-high .panel,html.contrast-high .auth-card{background:#fff;border:2px solid #000;box-shadow:none}
@@ -94,19 +282,22 @@ body.simple-ui .hero-art,body.simple-ui .quick-grid,body.simple-ui .brand small{
 body.simple-ui .hero{padding:1.2rem}
 body.simple-ui .panel{box-shadow:none;border-width:2px}
 
-/* --- Agregado: toggle iniciar sesión / registrarme --- */
-.auth-toggle{display:flex;gap:.4rem;background:#f3f2fa;border-radius:12px;padding:.3rem;margin-bottom:1.2rem}
-.auth-toggle button{flex:1;background:transparent;border-radius:9px;padding:.6rem;font-weight:800;color:#6f7184}
-.auth-toggle button.toggle-active{background:#fff;color:#6548ce;box-shadow:0 4px 12px #25213c14}
+/* ---------- Toggle iniciar sesión / registrarme ---------- */
+.auth-toggle{display:flex;gap:.4rem;background:var(--color-bg);border-radius:12px;padding:.3rem;margin-bottom:1.2rem}
+.auth-toggle button{flex:1;background:transparent;border-radius:9px;padding:.6rem;font-weight:700;color:var(--color-muted)}
+.auth-toggle button.toggle-active{background:var(--color-card);color:var(--color-primary-ink);box-shadow:var(--shadow-soft)}
 .hidden-panel{display:none}
-.switch-line{text-align:center;color:#818294;font-size:.85rem;margin-top:1rem}
-.switch-line a{color:#6548ce;font-weight:800}
+.switch-line{text-align:center;color:var(--color-muted);font-size:.85rem;margin-top:1rem}
+.switch-line a{color:var(--color-primary-ink);font-weight:700}
 
-/* --- Agregado: sistema de vistas (una sección visible a la vez) --- */
+/* ---------- Sistema de vistas (una sección visible a la vez) ---------- */
 .dashboard-main > .view{display:none}
 .dashboard-main > .view.active{display:block;animation:fadeInView .15s ease}
 @keyframes fadeInView{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .dashboard-main > .view > .panel,
 .dashboard-main > .view{max-width:900px}
 .sidebar nav a{position:relative}
-.sidebar nav a.active{background:#efeafd;color:#5538bd;font-weight:800}
+.sidebar nav a.active{background:var(--color-primary-soft);color:var(--color-primary-ink);font-weight:700}
+
+/* ---------- Toggle de sonido (nuevo) ---------- */
+.speaker-btn,.voice-icon{color:var(--color-primary-ink)}

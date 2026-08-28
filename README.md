@@ -1,65 +1,126 @@
-# Conecto+ — versión Python
+# Conecto+ — Aprendemos juntos
 
-Esta carpeta contiene una migración paralela de Conecto+ que no requiere Node.js. Usa Flask, Jinja2, SQLite y JavaScript del navegador para conservar los paneles visuales y los flujos principales de alumno y profesor.
+Plataforma web para que docentes se comuniquen y adapten actividades para
+alumnos con dificultades de aprendizaje. Hecha en Flask + Jinja2 + SQLite,
+con un módulo de perfil de aprendizaje y adaptación de contenido con IA.
 
-## Requisitos
+## Cómo iniciar la app (paso a paso)
 
-Se necesita Python 3.10 o superior. La versión original de React/Node permanece en el directorio padre como respaldo y no se modifica con esta migración.
-
-## Instalación
-
-Desde esta carpeta, crear y activar el entorno virtual:
+### 1. Instalar dependencias (una sola vez)
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 ```
 
-En Windows PowerShell:
+### 2. Instalar y configurar Ollama (para que la IA funcione)
 
-```powershell
-py -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-```
-
-## Ejecución
+La adaptación de texto usa un modelo de IA que corre **local y gratis**
+con [Ollama](https://ollama.com/download) — no requiere ninguna API key ni
+tarjeta de crédito. Sin Ollama corriendo, la app funciona igual, solo que
+no reescribe el texto (usa el texto original tal cual).
 
 ```bash
-export CONECTO_SECRET='cambiá-esta-clave'
+# 1. Instalar Ollama desde https://ollama.com/download (según tu sistema operativo)
+# 2. Una vez instalado, descargar el modelo (una sola vez, ~4.7GB):
+ollama pull llama3.1
+```
+
+Ollama queda corriendo solo en segundo plano después de instalarlo (ícono
+en la bandeja del sistema). No hace falta hacer nada más para que la app lo
+detecte.
+
+### 3. Configurar variables de entorno
+
+```bash
+cp .env.example .env
+```
+
+No hace falta tocar nada más del `.env` para que ande con Ollama (los
+valores por defecto ya apuntan a `http://localhost:11434`).
+
+### 4. Cargar datos de prueba (opcional, recomendado para demos)
+
+```bash
+python seed_demo.py
+```
+
+Esto carga 3 alumnos con perfiles de aprendizaje distintos, tareas, avisos,
+mensajes y pedidos de ayuda ya armados. Cuentas de prueba (password para
+todas: `demo1234`):
+
+| Rol | Email |
+|---|---|
+| Profesora | `ana@escuela.com` |
+| Alumno | `tomas@alumno.com` |
+| Alumna | `martina@alumno.com` |
+| Alumno | `joaquin@alumno.com` |
+
+Si en algún momento quieren reiniciar los datos de prueba desde cero:
+`python seed_demo.py --reset`
+
+### 5. Levantar el servidor
+
+```bash
 python app.py
 ```
 
-En Windows PowerShell:
+Abrir `http://127.0.0.1:5000` en el navegador. La base SQLite se crea sola
+en `instance/conecto.sqlite3` la primera vez que corre.
 
-```powershell
-$env:CONECTO_SECRET='cambiá-esta-clave'
-python app.py
+## Probar solo la parte de IA (sin levantar toda la app)
+
+```bash
+python demo_ai.py
 ```
 
-Abrir `http://127.0.0.1:5000`. La base de datos SQLite se crea automáticamente en `instance/conecto.sqlite3`.
+Corre la función de adaptación de texto sola, con un ejemplo fijo, sin
+necesitar login ni base de datos. Útil para probar cambios en el prompt
+rápido. La primera consulta a Ollama puede tardar 10-40 segundos (carga
+el modelo en memoria); las siguientes son más rápidas.
 
-## Flujos incluidos
+## Tests automatizados
 
-La pantalla inicial permite elegir alumno o profesor antes de mostrar las credenciales. Ambos roles pueden registrarse con nombre, correo y contraseña.
+```bash
+python -m pytest tests/ -v
+```
 
-El profesor puede:
-- Registrar sus materias.
-- Crear una tarea nueva desde el botón "Nueva tarea" de Inicio (se abre en una ventana emergente, sin salir de la sección Inicio), dirigida a un alumno puntual o a todo el curso, eligiendo entre las materias que ya registró.
-- Adjuntar un archivo a la tarea (PDF, TXT, Word o imagen). Si es PDF o TXT, Conecto+ extrae el texto automáticamente y lo separa en pasos cortos y numerados para el alumno; el profesor también puede escribir los pasos a mano.
-- Publicar avisos importantes.
-- Escribirle directamente a cada alumno registrado desde "Comunicación", con el historial de mensajes y un aviso de mensajes nuevos sin leer.
-- Ver los contactos familiares que cada alumno registró, en "Reunión con familiares", con un botón para copiar el teléfono o correo y coordinar por privado.
+7 tests, no dependen de Ollama (siempre tienen que pasar, esté Ollama
+corriendo o no).
 
-El alumno puede:
-- Ver sus tareas como una lista de pasos simple y clara (en vez de un párrafo largo), con un botón para escuchar la tarea en voz alta y un enlace al archivo adjunto adaptado.
-- Recibir avisos importantes.
-- Escribirle a cualquier profesor registrado y ver las respuestas en el mismo hilo de conversación.
-- Registrar un contacto familiar (nombre, relación, teléfono o correo) para que el profesor pueda coordinar una reunión.
+## Estructura del proyecto
 
-## Notas sobre la simplificación de archivos
+```
+conecto/
+├── app.py                    # Arma la app y registra los blueprints
+├── config.py                  # Paths, constantes, schema de la DB, glosario, perfil
+├── extensions.py               # Conexión a SQLite (get_db, query, execute)
+├── security.py                  # current_user, login_required, role_required
+├── utils.py                      # Extracción de PDF/TXT, glosario, progreso, calendario
+├── seed_demo.py                   # Carga datos de prueba para demos
+├── demo_ai.py                      # Prueba la IA sola, sin levantar toda la app
+├── services/
+│   └── ai_service.py                # Adaptación de texto con Ollama según perfil
+├── routes/
+│   ├── auth_routes.py                # Login, registro, logout
+│   ├── dashboard_routes.py           # Panel de profesor y alumno
+│   ├── task_routes.py                 # Tareas, adjuntos, entregas (+ hook de IA)
+│   ├── communication_routes.py        # Mensajes, avisos, ayuda, contactos
+│   └── profile_routes.py              # Perfil de aprendizaje
+├── static/style.css                    # Sistema de diseño (paleta calma, tipografía accesible)
+├── templates/                           # Un archivo por pantalla
+└── tests/test_app.py                     # 7 tests, siguen pasando
+```
 
-La adaptación automática de contenido funciona extrayendo el texto de archivos PDF y TXT y separándolo en oraciones/pasos cortos. Es una simplificación estructural (paso a paso), no una reescritura del lenguaje con inteligencia artificial: si en el futuro se quiere resumir o reformular el texto con un modelo de lenguaje (por ejemplo, para acortar oraciones complejas), se puede conectar la función `split_into_steps` de `app.py` a un servicio externo de IA usando una API key propia.
+## Qué hace la IA (y qué no)
 
-Esta edición Python no es una conversión binaria del frontend React: la interfaz fue reescrita con plantillas Jinja2 y CSS vanilla.
+Cuando el profesor crea una tarea con un archivo PDF/TXT adjunto, dirigida a
+un alumno con perfil de aprendizaje cargado, el texto extraído se manda a
+Ollama (modelo local) para reescribirlo en lenguaje simple según las
+necesidades de ese alumno, ANTES de dividirlo en pasos. Si Ollama no está
+corriendo, o falla por cualquier motivo, se usa el texto extraído tal cual
+(sin adaptar) — nunca se rompe el flujo de creación de tareas.
+
+Ver `HANDOFF.md` para el detalle de qué falta y cómo seguir si en algún
+momento quieren volver a una API paga (Anthropic u otra) en vez de Ollama.

@@ -28,7 +28,7 @@
         </div>
         {% else %}
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <a href="{{ url_for('home') }}" style="color: #6366f1; text-decoration: none; font-weight: 600;">← Volver a elegir perfil</a>
+            <a href="{{ url_for('auth.home') }}" style="color: #6366f1; text-decoration: none; font-weight: 600;">← Volver a elegir perfil</a>
             <span class="tag" style="background: #eef2ff; color: #4f46e5; padding: 0.3rem 0.8rem; border-radius: 20px; font-weight: 600;">Perfil: {{ 'Alumno/a' if role == 'student' else 'Profesor/a' }}</span>
         </div>
 
