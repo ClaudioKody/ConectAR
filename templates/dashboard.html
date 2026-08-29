@@ -2,7 +2,7 @@
 {% block content %}
 <div class="app-shell {{ mode }}">
 <aside class="sidebar">
-<div class="brand compact"><span>Conecto+</span><small>Aprendemos juntos</small></div>
+<div class="brand compact"><span>ConectAR+</span><small>Aprendemos juntos</small></div>
 <div class="profile-mini"><strong>{{ user['full_name'] }}</strong><small>{{ 'Profesor/a' if mode == 'teacher' else 'Alumno/a' }}</small></div>
 <nav>
 <a href="#home" data-view="home" class="active" onclick="return showView('home', event)"><span>Inicio</span></a>
@@ -57,31 +57,39 @@
 </div>
 </div>
 <dialog id="new-task-modal" class="modal">
-<form method="post" action="{{ url_for('tasks.create_task') }}" enctype="multipart/form-data" class="task-form">
-<div class="modal-head"><h3>Nueva tarea</h3><button type="button" class="icon-close" onclick="document.getElementById('new-task-modal').close()">X</button></div>
-<label>Materia
-{% if subjects %}
-<select name="subject" required>
-<option value="">Elegi una materia</option>
-{% for subject in subjects %}<option value="{{ subject }}">{{ subject }}</option>{% endfor %}
-</select>
-{% else %}
-<span class="empty small">Todavía no registraste materias. Agrega una en la sección Aula antes de crear una tarea.</span>
-{% endif %}
-</label>
-<label>Titulo<input name="title" placeholder="Titulo de la tarea" required></label>
-<label>Descripción<textarea name="description" placeholder="Descripción de la tarea, con tus palabras"></textarea></label>
-<label>Pasos simplificados (opcional, uno por linea) <textarea name="steps" placeholder="Ej:&#10; Abrir el cuaderno&#10; Leer la primera página&#10; Escribir una oración"></textarea></label>
-<label>Archivo adjunto (opcional) <input type="file" name="attachment" accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg,.gif"></label>
-<label>Fecha de entrega<input type="date" name="due_at"></label>
-<label>¿Para quién es?
-<select name="student_id">
-<option value="">Todo el curso</option>
-{% for student in students %}<option value="{{ student['id'] }}">{{ student['full_name'] }}</option>{% endfor %}
-</select>
-</label>
-<button class="primary" type="submit" {% if not subjects %}disabled{% endif %}>Publicar tarea</button>
-</form>
+  <form method="post" action="{{ url_for('tasks.create_task') }}" enctype="multipart/form-data" class="task-form">
+    <div class="modal-head">
+      <h3>Nueva tarea</h3>
+      <button type="button" class="icon-close" onclick="document.getElementById('new-task-modal').close()">X</button>
+    </div>
+
+    <label>Materia
+      {% if subjects %}
+        <select name="subject" required>
+          <option value="">Elegí una materia</option>
+          {% for subject in subjects %}
+            <option value="{{ subject }}">{{ subject }}</option>
+          {% endfor %}
+        </select>
+      {% else %}
+        <span class="empty small">Todavía no registraste materias. Agregá una en la sección Aula antes de crear una tarea.</span>
+      {% endif %}
+    </label>
+
+    <label>Título<input name="title" placeholder="Título de la tarea" required></label>
+    <label>Descripción<textarea name="description" placeholder="Descripción de la tarea, con tus palabras"></textarea></label>
+    <label>Pasos simplificados (opcional, uno por línea) <textarea name="steps" placeholder="Ej:&#10; Abrir el cuaderno&#10; Leer la primera página&#10; Escribir una oración"></textarea></label>
+    <label>Archivo adjunto (opcional) <input type="file" name="attachment" accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg,.gif"></label>
+    <label>Fecha de entrega<input type="date" name="due_at"></label>
+    <label>¿Para quién es?
+      <select name="student_id">
+        <option value="">Todo el curso</option>
+        {% for student in students %}<option value="{{ student['id'] }}">{{ student['full_name'] }}</option>{% endfor %}
+      </select>
+    </label>
+
+    <button class="primary" type="submit" {% if not subjects %}disabled{% endif %}>Publicar tarea</button>
+  </form>
 </dialog>
 <!-- AULA -->
 <div class="view" id="view-aula">
@@ -350,7 +358,6 @@
 <strong>{{ thread.teacher['full_name'] }}</strong>
 </div>
 {% if thread.unread %} <span class="tag pink" style="background: #fdf2f8; color: #db2777; padding: 2px 8px; border-radius: 10px;">{{ thread.unread }} nuevo(s)</span> {% else %} <span class="tag">Al Día</span>{% endif %}
-</summary>
 <div class="thread-messages" style="margin-top: 1rem; max-height: 250px; overflow-y: auto; padding: 0.5rem; background: #f9fafb; border-radius: 8px;">
 {% for m in thread.messages %}
 <div class="bubble" style="margin-bottom: 0.5rem; padding: 0.5rem; background: {{ '#e0e7ff' if m['sender_id'] == user['id'] else '#fff' }}; border-radius: 8px; width: fit-content; max-width: 80%; {% if m['sender_id'] == user['id'] %}margin-left: auto; text-align: right;{% endif %}">
@@ -472,7 +479,7 @@ function showView(name, evt) {
 }
 
 // ---------- Tamaño de letra ----------
-var FONT_MIN = 80, FONT_MAX = 150, FONT_STEP = 10;
+var FONT_MIN = 80, FONT_MAX = 200, FONT_STEP = 10;
 
 function applyFontSize(percent) {
   document.documentElement.style.fontSize = percent + '%';

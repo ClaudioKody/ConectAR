@@ -2,7 +2,7 @@
 {% block content %}
 <div class="auth-shell">
     <section class="welcome-side">
-        <div class="brand">Conecto+<small>Aprendemos juntos</small></div>
+        <div class="brand">ConectAR+<small>Aprendemos juntos</small></div>
         <div class="welcome-orb"></div>
         <h1>Aprendemos juntos, <br><span>cada uno a su manera.</span></h1>
         <p>Un espacio claro, amable e inclusivo para conectar, aprender y crecer.</p>
@@ -43,10 +43,12 @@
                 <form method="post">
                     <input type="hidden" name="role" value="{{ role }}">
                     <input type="hidden" name="action" value="login"> 
-                    <label style="display: block; margin-bottom: 1rem;">Correo electrónico<input type="email" name="email" value="{{ email or '' }}" required style="width: 100%; padding: 0.7rem; margin-top: 0.3rem; border: 1px solid #d1d5db; border-radius: 8px;"></label>
+                    <label style="display: block; margin-bottom: 1rem;">Correo electrónico
+                        <input type="email" name="email" value="{{ email or '' }}" autocomplete="username" required style="width: 100%; padding: 0.7rem; margin-top: 0.3rem; border: 1px solid #d1d5db; border-radius: 8px;">
+                    </label>
                     <label style="display: block; margin-bottom: 1.5rem;">Contraseña
                         <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.3rem;">
-                            <input type="password" name="password" id="login-password" required style="width: 100%; padding: 0.7rem; border: 1px solid #d1d5db; border-radius: 8px;">
+                            <input type="password" name="password" id="login-password" autocomplete="current-password" required style="width: 100%; padding: 0.7rem; border: 1px solid #d1d5db; border-radius: 8px;">
                             <button type="button" onclick="togglePassword('login-password', this)" style="padding: 0.7rem; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer;">👁</button>
                         </div>
                     </label>
@@ -59,11 +61,15 @@
                 <form method="post">
                     <input type="hidden" name="role" value="{{ role }}">
                     <input type="hidden" name="action" value="register"> 
-                    <label style="display: block; margin-bottom: 1rem;">Nombre completo<input name="full_name" required style="width: 100%; padding: 0.7rem; margin-top: 0.3rem; border: 1px solid #d1d5db; border-radius: 8px;"></label>
-                    <label style="display: block; margin-bottom: 1rem;">Correo electrónico<input type="email" name="email" required style="width: 100%; padding: 0.7rem; margin-top: 0.3rem; border: 1px solid #d1d5db; border-radius: 8px;"></label>
+                    <label style="display: block; margin-bottom: 1rem;">Nombre completo
+                        <input name="full_name" autocomplete="name" required style="width: 100%; padding: 0.7rem; margin-top: 0.3rem; border: 1px solid #d1d5db; border-radius: 8px;">
+                    </label>
+                    <label style="display: block; margin-bottom: 1rem;">Correo electrónico
+                        <input type="email" name="email" autocomplete="username" required style="width: 100%; padding: 0.7rem; margin-top: 0.3rem; border: 1px solid #d1d5db; border-radius: 8px;">
+                    </label>
                     <label style="display: block; margin-bottom: 1.5rem;">Contraseña
                         <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.3rem;">
-                            <input type="password" name="password" id="reg-password" minlength="8" required style="width: 100%; padding: 0.7rem; border: 1px solid #d1d5db; border-radius: 8px;">
+                            <input type="password" name="password" id="reg-password" minlength="8" autocomplete="new-password" required style="width: 100%; padding: 0.7rem; border: 1px solid #d1d5db; border-radius: 8px;">
                             <button type="button" onclick="togglePassword('reg-password', this)" style="padding: 0.7rem; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer;">👁</button>
                         </div>
                     </label>
