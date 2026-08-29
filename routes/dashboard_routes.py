@@ -43,14 +43,17 @@ def _teacher_dashboard(user):
         "SELECT fc.*, a.full_name AS student_name FROM family_contacts fc JOIN accounts a ON a.id = fc.student_id ORDER BY fc.created_at DESC"
     )
     unread_total = unread_message_count(user["id"])
-    student_threads = [
-        {
+
+    student_threads = []
+    for student in students:
+        cnt = unread_from(student["id"], user["id"])
+        msgs = message_thread(user["id"], student["id"])
+        student_threads.append({
             "student": student,
-            "messages": message_thread(user["id"], student["id"]),
-            "unread": unread_from(student["id"], user["id"]),
-        }
-        for student in students
-    ]
+            "messages": msgs,
+            "unread": cnt,
+        })
+
     student_notices = query(
         "SELECT sn.*, a.full_name AS student_name FROM student_notices sn JOIN accounts a ON a.id = sn.student_id WHERE (sn.teacher_id = ? OR sn.teacher_id IS NULL) AND sn.is_read = 0 ORDER BY sn.created_at DESC",
         (user["id"],),
@@ -60,20 +63,33 @@ def _teacher_dashboard(user):
         (user["id"],),
     )
     pending_help_count = sum(1 for h in help_requests if h["status"] == "pendiente")
+
+    # Progreso individual calculando la entrega específica de CADA alumno en 'submissions'
     student_progress = []
     for student in students:
         student_tasks = query(
-            "SELECT * FROM tasks WHERE teacher_id = ? AND (student_id IS NULL OR student_id = ?)",
-            (user["id"], student["id"]),
+            """
+            SELECT 
+                t.id, t.teacher_id, t.student_id, t.subject, t.title, t.description, t.steps, t.due_at, t.created_at,
+                CASE 
+                    WHEN sub.id IS NOT NULL THEN 1 
+                    WHEN t.student_id = ? AND t.completed = 1 THEN 1
+                    ELSE 0 
+                END AS completed
+            FROM tasks t
+            LEFT JOIN submissions sub ON sub.task_id = t.id AND sub.student_id = ?
+            WHERE t.teacher_id = ? AND (t.student_id IS NULL OR t.student_id = ?)
+            """,
+            (student["id"], student["id"], user["id"], student["id"]),
         )
         student_progress.append({"student": student, "progress": progress_summary(student_tasks)})
+
     upcoming = upcoming_events(tasks)
     recent_submissions = query(
         "SELECT sub.*, t.title AS task_title, t.subject AS subject, a.full_name AS student_name FROM submissions sub JOIN tasks t ON t.id = sub.task_id JOIN accounts a ON a.id = sub.student_id WHERE t.teacher_id = ? ORDER BY sub.submitted_at DESC LIMIT 8",
         (user["id"],),
     )
     calendar = build_month_calendar(tasks)
-    # Perfiles de aprendizaje ya cargados, para mostrar un indicador junto a cada alumno
     profile_rows = query("SELECT student_id FROM learning_profiles")
     students_with_profile = {row["student_id"] for row in profile_rows}
     return render_template(
@@ -100,8 +116,22 @@ def _teacher_dashboard(user):
 
 def _student_dashboard(user):
     tasks = query(
-        "SELECT t.*, a.full_name AS teacher_name FROM tasks t JOIN accounts a ON a.id = t.teacher_id WHERE t.student_id IS NULL OR t.student_id = ? ORDER BY t.due_at IS NULL, t.due_at",
-        (user["id"],),
+        """
+        SELECT 
+            t.id, t.teacher_id, t.student_id, t.subject, t.title, t.description, t.steps, t.due_at, t.created_at,
+            a.full_name AS teacher_name,
+            CASE 
+                WHEN sub.id IS NOT NULL THEN 1 
+                WHEN t.student_id = ? AND t.completed = 1 THEN 1
+                ELSE 0 
+            END AS completed
+        FROM tasks t 
+        JOIN accounts a ON a.id = t.teacher_id 
+        LEFT JOIN submissions sub ON sub.task_id = t.id AND sub.student_id = ?
+        WHERE t.student_id IS NULL OR t.student_id = ? 
+        ORDER BY t.due_at IS NULL, t.due_at
+        """,
+        (user["id"], user["id"], user["id"]),
     )
     teachers = query("SELECT * FROM accounts WHERE role = 'teacher' ORDER BY full_name")
     announcements = query(
@@ -110,14 +140,17 @@ def _student_dashboard(user):
     )
     family_contacts = query("SELECT * FROM family_contacts WHERE student_id = ? ORDER BY created_at DESC", (user["id"],))
     unread_total = unread_message_count(user["id"])
-    teacher_threads = [
-        {
+
+    teacher_threads = []
+    for teacher in teachers:
+        cnt = unread_from(teacher["id"], user["id"])
+        msgs = message_thread(user["id"], teacher["id"])
+        teacher_threads.append({
             "teacher": teacher,
-            "messages": message_thread(user["id"], teacher["id"]),
-            "unread": unread_from(teacher["id"], user["id"]),
-        }
-        for teacher in teachers
-    ]
+            "messages": msgs,
+            "unread": cnt,
+        })
+
     subjects_map: dict[str, list[sqlite3.Row]] = {}
     for task in tasks:
         subjects_map.setdefault(task["subject"], []).append(task)

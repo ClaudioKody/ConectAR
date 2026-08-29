@@ -9,6 +9,7 @@ crear una tarea SI:
 Si no se cumple alguna condición, o si falla la API, se usa el flujo
 original (split_into_steps sobre el texto extraído o la descripción).
 """
+from pathlib import Path
 from flask import Blueprint, abort, flash, redirect, request, send_from_directory, url_for, current_app
 
 from extensions import execute, query
@@ -47,24 +48,33 @@ def create_task():
     title = request.form.get("title", "").strip()
     description = request.form.get("description", "").strip()
     manual_steps = request.form.get("steps", "").strip()
-    student_id = request.form.get("student_id") or None
+    
+    student_id_raw = request.form.get("student_id", "").strip()
+    student_id = int(student_id_raw) if student_id_raw.isdigit() else None
+
     if not subject or not title:
         flash("La materia y el título son obligatorios.", "warning")
         return redirect(url_for("dashboard.dashboard"))
+
     had_file = bool(request.files.get("attachment") and request.files["attachment"].filename)
     stored_name, original_name, extracted_text = save_upload("attachment")
+
     if had_file and stored_name is None:
         return redirect(url_for("dashboard.dashboard"))
 
     steps_source = manual_steps or extracted_text or description
 
-    # Si no hay pasos manuales y hay texto extraído de un archivo, se intenta
-    # adaptar con IA según el perfil del alumno antes de partir en pasos.
     if not manual_steps and extracted_text:
-        perfil_texto = _perfil_texto_de_alumno(student_id)
-        steps_source = adaptar_texto(extracted_text, perfil_texto)
+        try:
+            perfil_texto = _perfil_texto_de_alumno(student_id)
+            if perfil_texto:
+                steps_source = adaptar_texto(extracted_text, perfil_texto)
+        except Exception:
+            steps_source = extracted_text or description
 
     steps_value = "\n".join(split_into_steps(steps_source))
+    due_at = request.form.get("due_at", "").strip() or None
+
     execute(
         "INSERT INTO tasks (teacher_id, student_id, subject, title, description, steps, file_path, file_name, due_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (
@@ -76,7 +86,7 @@ def create_task():
             steps_value,
             stored_name,
             original_name,
-            request.form.get("due_at") or None,
+            due_at,
         ),
     )
     flash("Tarea creada y sincronizada con el alumno.", "success")
@@ -126,10 +136,17 @@ def uploaded_file(stored_name: str):
 @task_bp.post("/student/tasks/<int:task_id>/complete")
 @role_required("student")
 def complete_task(task_id: int):
-    execute(
-        "UPDATE tasks SET completed = 1 WHERE id = ? AND (student_id = ? OR student_id IS NULL)",
-        (task_id, current_user()["id"]),
-    )
+    user = current_user()
+    rows = query("SELECT * FROM tasks WHERE id = ?", (task_id,))
+    if rows:
+        task = rows[0]
+        if task["student_id"] is not None:
+            execute("UPDATE tasks SET completed = 1 WHERE id = ?", (task_id,))
+        else:
+            execute(
+                "INSERT INTO submissions (task_id, student_id, note) VALUES (?, ?, ?)",
+                (task_id, user["id"], "Marcada como completada"),
+            )
     return redirect(url_for("dashboard.dashboard"))
 
 
@@ -143,6 +160,7 @@ def submit_task(task_id: int):
     )
     if not rows:
         abort(404)
+    task = rows[0]
     note = request.form.get("note", "").strip()
     had_file = bool(request.files.get("attachment") and request.files["attachment"].filename)
     stored_name, original_name, _ = save_upload("attachment")
@@ -155,6 +173,9 @@ def submit_task(task_id: int):
         "INSERT INTO submissions (task_id, student_id, file_path, file_name, note) VALUES (?, ?, ?, ?, ?)",
         (task_id, user["id"], stored_name, original_name, note),
     )
-    execute("UPDATE tasks SET completed = 1 WHERE id = ?", (task_id,))
+    # Solo marcamos 'completed = 1' en la tabla 'tasks' si es una tarea individual dirigida a un solo alumno
+    if task["student_id"] is not None:
+        execute("UPDATE tasks SET completed = 1 WHERE id = ?", (task_id,))
+        
     flash("¡Entrega subida! Tu profesor/a ya la puede ver.", "success")
     return redirect(url_for("dashboard.dashboard"))
