@@ -31,10 +31,12 @@ def split_into_steps(text: str) -> list[str]:
     if not text:
         return []
     lines = [line.strip("\t.-") for line in text.splitlines() if line.strip()]
-    if len(lines) > 1:
-        return lines[:12]
-    sentences = [s.strip() for s in SENTENCE_SPLIT_RE.split(text) if s.strip()]
-    return sentences[:12] if sentences else [text]
+    steps = []
+    for line in lines:
+        cleaned = re.sub(r'^\d+[\.\-]\s*', '', line)
+        if cleaned:
+            steps.append(cleaned)
+    return steps if steps else [text]
 
 
 def extract_pdf_text(path: Path, max_chars: int = 4000) -> str:

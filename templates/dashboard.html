@@ -11,7 +11,7 @@
 <a href="#students" data-view="students" onclick="return showView('students', event)"><span>Estudiantes</span></a>
 <a href="#mensajes" data-view="mensajes" onclick="return showView('mensajes', event)"><span>Mensajes</span> {% if unread_total %}<b class="nav-badge">{{ unread_total }}</b>{% endif %}</a>
 <a href="#ayuda-profe" data-view="ayuda-profe" onclick="return showView('ayuda-profe', event)"><span>Necesito ayuda</span> {% if pending_help_count %}<b class="nav-badge">{{ pending_help_count }}</b>{% endif %}</a>
-<a href="#avisos" data-view="avisos" onclick="return showView('avisos', event)"><span>Avisos</span> {% if student_notices %}<b class="nav-badge">{{ student_notices | length }}</b> {% endif %}</a>
+<a href="#avisos" data-view="avisos" onclick="return showView('avisos', event)"><span>Avisos</span> {% if student_notices %}<b class="nav-badge">{{ student_notices | length }}</b>{% endif %}</a>
 <a href="#progreso-profe" data-view="progreso-profe" onclick="return showView('progreso-profe', event)"><span>Progreso</span></a>
 <a href="#agenda" data-view="agenda" onclick="return showView('agenda', event)"><span>Recordatorios y agenda</span></a>
 <a href="#familias" data-view="familias" onclick="return showView('familias', event)"><span>Familias</span></a>
@@ -38,7 +38,7 @@
 <small>{{ today_label }}</small>
 </div>
 <div class="top-actions">
-<span class="notification">{% if unread_total %} <span class="badge">{{ unread_total }}</span>{% endif %}</span>
+<span class="notification">{% if unread_total %}<span class="badge">{{ unread_total }}</span>{% endif %}</span>
 <span class="avatar">{{ user['full_name'][0] }}</span>
 </div>
 </header>
@@ -98,6 +98,14 @@
 <div>
 <strong>{{ task['title'] }}</strong>
 <small>({{ task['subject'] }} · {{ task['student_name'] or 'Todo el curso' }})</small>
+{% if task['file_path'] %}
+<div style="margin-top: 0.4rem; display: flex; gap: 0.5rem; align-items: center;">
+<a href="{{ url_for('tasks.uploaded_file', stored_name=task['file_path']) }}" target="_blank" class="tag" style="font-size: 0.7rem;">Ver PDF adjunto ({{ task['file_name'] }})</a>
+<form method="post" action="{{ url_for('tasks.delete_task_attachment', task_id=task['id']) }}" onsubmit="return confirm('¿Eliminar el archivo adjunto de esta tarea?');" style="display:inline;">
+<button type="submit" class="outline-button small" style="color: #dc2626; border-color: #fca5a5; padding: 2px 6px; font-size: 0.7rem;">Borrar archivo</button>
+</form>
+</div>
+{% endif %}
 </div>
 {% if task['completed'] %}<span class="tag green">Completada</span>{% else %}<span class="tag">Pendiente</span>{% endif %}
 </div>
@@ -111,14 +119,14 @@
 {% for student in students %}
 <div class="person-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid #eee;">
 <div style="display: flex; gap: 1rem; align-items: center;">
-<span class="avatar mint" style="background:#e0f2fe; padding:10px; border-radius: 50%;">{{ student['full_name'][0] }}</span>
+<span class="avatar mint" style="background: #e0f2fe; padding:10px; border-radius: 50%;">{{ student['full_name'][0] }}</span>
 <div>
 <strong>{{ student['full_name'] }}</strong><br>
 <small>{% if student['last_login'] %}Última conexión: {{ student['last_login'] }}{% else %}Todavía no inició sesión{% endif %}</small>
 </div></div>
 <div style="display: flex; gap: 0.5rem;">
 <button type="button" class="tag" onclick="showView('progreso-profe')">Ver progreso</button>
-<a href="{{ url_for('profiles.edit_profile', student_id=student['id']) }}" class="tag{% if student['id'] in students_with_profile %}{% else %} outline-button{% endif %}">{% if student['id'] in students_with_profile %}Perfil cargado ✓{% else %}Cargar perfil{% endif %}</a>
+<a href="{{ url_for('profiles.edit_profile', student_id=student['id']) }}" class="tag{% if student['id'] in students_with_profile %}{% else %} outline-button{% endif %}">{% if student['id'] in students_with_profile %}Perfil cargado{% else %}Cargar perfil{% endif %}</a>
 <form method="post" action="{{ url_for('auth.delete_student', student_id=student['id']) }}" onsubmit="return confirm('¿Estás seguro de eliminar a este estudiante?');">
 <button type="submit" class="outline-button" style="color: #dc2626; border-color: #fca5a5;">Quitar</button>
 </form>
@@ -138,11 +146,11 @@
 <span class="avatar mint" style="background: #e0f2fe; padding: 8px; border-radius: 50%;">{{ thread.student['full_name'][0] }}</span>
 <strong>{{ thread.student['full_name'] }}</strong>
 </div>
-{% if thread.unread %} <span class="tag pink" style="background: #fdf2f8; color: #db2777; padding: 2px 8px; border-radius: 10px;">{{ thread.unread }} nuevo(s)</span>{% else %} <span class="tag">Al Día</span> {% endif %}
+{% if thread.unread %}<span class="tag pink" style="background: #fdf2f8; color: #db2777; padding: 2px 8px; border-radius: 10px;">{{ thread.unread }} nuevo(s)</span>{% else %}<span class="tag">Al Dia</span>{% endif %}
 </summary>
 <div class="thread-messages" style="margin-top: 1rem; max-height: 250px; overflow-y: auto; padding: 0.5rem; background: #f9fafb; border-radius: 8px;">
 {% for m in thread.messages %}
-<div class="bubble" style="margin-bottom: 0.5rem; padding: 0.5rem; background: {{ '#e0e7ff' if m['sender_id'] == user['id'] else '#fff'}}; border-radius: 8px; width: fit-content; max-width: 80%; {% if m['sender_id'] == user['id'] %}margin-left: auto; text-align: right;{% endif %}">
+<div class="bubble" style="margin-bottom: 0.5rem; padding: 0.5rem; background: {{ '#e0e7ff' if m['sender_id'] == user['id'] else '#fff' }}; border-radius: 8px; width: fit-content; max-width: 80%; {% if m['sender_id'] == user['id'] %}margin-left: auto; text-align: right;{% endif %}">
 <small style="color: #6b7280; display: block; font-size: 0.75rem;">{{ m['created_at'] }}</small>
 <span>{{ m['body'] }}</span>
 </div>
@@ -156,7 +164,7 @@
 <button class="primary" style="padding: 0.5rem 1rem; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer;">Enviar</button>
 </form>
 </details>
-{% else %}<p class="empty">Todavía no hay alumnos registrados.</p>{% endfor %}
+{% else %}<p class="empty">Todavia no hay alumnos registrados.</p>{% endfor %}
 </section>
 </div>
 <!-- NECESITO AYUDA -->
@@ -167,10 +175,11 @@
 <div class="help-row {{ 'attended' if h['status'] != 'pendiente' else '' }}">
 <div>
 <strong>{{ h['student_name'] }}</strong>
-<small>{{ h['option_label'] }} {% if h['task_title'] %}: {{ h['task_title'] }}{% endif %} - {{ h['created_at'] }}</small>
+<small>{{ h['option_label'] }} {% if h['task_title'] %}· Tarea: {{ h['task_title'] }}{% endif %} · {{ h['created_at'] }}</small>
 {% if h['note'] %}<p class="help-note">"{{ h['note'] }}"</p>{% endif %}
 </div>
-{% if h['status'] == 'pendiente' %}<form method="post" action="{{ url_for('communication.attend_help_request', request_id=h['id']) }}">
+{% if h['status'] == 'pendiente' %}
+<form method="post" action="{{ url_for('communication.attend_help_request', request_id=h['id']) }}">
 <button class="outline-button small">Marcar atendido</button>
 </form>
 {% else %}
@@ -236,7 +245,7 @@
 {% for c in family_contacts %}
 <div class="person-row">
 <span class="avatar mint">{{ c['contact_name'][0] }}</span>
-<div><strong>{{ c['contact_name'] }}</strong><small>{{ c['relationship'] or 'Familiar' }} de {{ c['student_name'] }} {% if c['phone'] %} - Tel: {{ c['phone'] }}{% endif %}</small></div></div>
+<div><strong>{{ c['contact_name'] }}</strong><small>{{ c['relationship'] or 'Familiar' }} de {{ c['student_name'] }} {% if c['phone'] %}· Tel: {{ c['phone'] }}{% endif %}</small></div></div>
 {% else %}<p class="empty">Los alumnos todavía no registraron un contacto familiar.</p>{% endfor %}
 </section>
 </div>
@@ -246,14 +255,14 @@
 <div class="section-head"><h3>Configuración</h3><span>Sonido y Accesibilidad</span></div>
 <div class="switch-row" style="justify-content:center; align-items:center; gap:1.2rem; margin-bottom:0.8rem;">
 <span>Tamaño de letra</span>
-<div style="display:flex; gap:0.6rem; align-items:center;">
-<button type="button" id="font-decrease" aria-label="Achicar letra" style="width:32px;height:32px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;font-weight:600;">A-</button>
+<div style="display: flex; gap:0.6rem; align-items:center;">
+<button type="button" id="font-decrease" aria-label="Achicar letra" style="width: 32px;height:32px;border:1px solid #d1d5db;border-radius: 8px;background:#fff;cursor:pointer;font-weight:600;">A-</button>
 <span id="font-size-label" style="min-width:3.5ch; text-align:center; font-weight:600; color:#4f46e5;">100%</span>
-<button type="button" id="font-increase" aria-label="Agrandar letra" style="width:32px;height:32px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;font-weight:600;">A+</button>
+<button type="button" id="font-increase" aria-label="Agrandar letra" style="width: 32px;height:32px;border:1px solid #d1d5db;border-radius: 8px;background:#fff;cursor:pointer;font-weight:600;">A+</button>
 </div>
 </div>
 <label class="switch-row" style="justify-content:center;"><span>Activar lectura por parlantes de ayuda</span><input type="checkbox" id="voice-toggle-teacher" onchange="toggleVoice(this.checked)"></label>
-<label class="switch-row" style="justify-content:center;"><span>Activar sonido de notificación (mensajes y pedidos de ayuda)</span><input type="checkbox" id="sound-toggle-teacher" onchange="toggleSound(this.checked)"></label>
+<label class="switch-row" style="justify-content:center;"><span>Activar sonido de botones</span><input type="checkbox" id="sound-toggle-teacher" onchange="toggleSound(this.checked)"></label>
 </section>
 </div>
 {% else %}
@@ -272,7 +281,7 @@
 <div>
 <div style="display: flex; align-items: center; gap: 0.5rem;">
 <strong>{{ task['title'] }}</strong>
-<button type="button" class="speaker-btn" data-speak="{{ task['title'] ~ '. ' ~ (clean_steps | join('. ') if clean_steps else task['description']) }}" style="background:none; border:none; cursor:pointer; font-size: 1.1rem; display:none;" title="Escuchar">🔊</button>
+<button type="button" class="speaker-btn" data-speak="{{ task['title'] }}. {{ clean_steps | join('. ') if clean_steps else task['description'] }}" style="background:none; border:none; cursor:pointer; font-size: 1.1rem; display:none;" title="Escuchar"></button>
 </div>
 <small>{{ task['subject'] }} · {{ task['teacher_name'] }}</small>
 {% if clean_steps %}<ol class="step-list">{% for step in clean_steps %}<li>{{ step }}</li>{% endfor %}</ol>
@@ -281,7 +290,9 @@
 {% endif %}
 </div>
 {% if not task['completed'] %}
-<form method="post" action="{{ url_for('tasks.complete_task', task_id=task['id']) }}"><button class="outline-button">Completar</button></form>
+<form method="post" action="{{ url_for('tasks.complete_task', task_id=task['id']) }}">
+<button class="outline-button">Completar</button>
+</form>
 {% else %}
 <span class="tag green">Completada</span>
 {% endif %}
@@ -292,7 +303,7 @@
 <!-- MIS CLASES -->
 <div class="view" id="view-misclases">
 <section class="panel" id="misclases">
-<div class="section-head"><h3>Mis clases</h3><span>{{ my_classes|length }} materia(s)</span></div>
+<div class="section-head"><h3>Mis clases</h3><span>{{ my_classes | length }} materia(s)</span></div>
 <input type="text" id="search-tasks" placeholder="Buscar tarea o materia..." onkeyup="filterTasks()" style="width:100%; padding:0.7rem; border:1px solid #dedee9; border-radius:10px; margin-bottom:1rem; background:#fff;">
 {% for c in my_classes %}
 <details class="subject-block" open style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:1rem; margin-bottom:1rem;">
@@ -302,9 +313,9 @@
 <div>
 <div style="display: flex; align-items:center; gap:0.4rem;">
 <strong>{{ task['title'] }}</strong>
-<button type="button" class="speaker-btn" data-speak="{{ task['title'] }}" style="background:none; border:none; cursor:pointer; display:none;" title="Escuchar">🔊</button>
+<button type="button" class="speaker-btn" data-speak="{{ task['title'] }}" style="background:none; border:none; cursor:pointer; display:none;" title="Escuchar"></button>
 </div>
-<small>{{ task['teacher_name'] }} {% if task['due_at'] %} · Entrega: {{ task['due_at'] }}{% endif %}</small>
+<small>{{ task['teacher_name'] }} {% if task['due_at'] %}· Entrega: {{ task['due_at'] }}{% endif %}</small>
 </div>
 {% if task['completed'] %}
 <span class="tag green">Completada</span>
@@ -346,10 +357,10 @@
 <details class="subject-block" style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; background: #fff;">
 <summary style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
 <div style="display: flex; align-items: center; gap: 0.8rem;">
-<span class="avatar mint" style="background: #e0f2fe; padding:8px; border-radius: 50%;">{{ thread.teacher['full_name'][0] }}</span>
+<span class="avatar mint" style="background: #e0f2fe; padding: 8px; border-radius: 50%;">{{ thread.teacher['full_name'][0] }}</span>
 <strong>{{ thread.teacher['full_name'] }}</strong>
 </div>
-{% if thread.unread %} <span class="tag pink" style="background: #fdf2f8; color: #db2777; padding: 2px 8px; border-radius: 10px;">{{ thread.unread }} nuevo(s)</span> {% else %} <span class="tag">Al Día</span>{% endif %}
+{% if thread.unread %}<span class="tag pink" style="background: #fdf2f8; color: #db2777; padding: 2px 8px; border-radius: 10px;">{{ thread.unread }} nuevo(s)</span>{% else %}<span class="tag">Al Día</span>{% endif %}
 </summary>
 <div class="thread-messages" style="margin-top: 1rem; max-height: 250px; overflow-y: auto; padding: 0.5rem; background: #f9fafb; border-radius: 8px;">
 {% for m in thread.messages %}
@@ -375,7 +386,7 @@
 <section class="panel" id="announcements-student">
 <div class="section-head"><h3>Anuncios importantes</h3><span>De tus profesores</span></div>
 {% for announcement in announcements %}
-<div class="notice"><strong>{{ announcement['title'] }}</strong><small>{{ announcement['body'] }} - {{ announcement['teacher_name'] }}</small></div>
+<div class="notice"><strong>{{ announcement['title'] }}</strong><small>{{ announcement['body'] }} · {{ announcement['teacher_name'] }}</small></div>
 {% else %}<p class="empty">No hay anuncios recientes.</p>{% endfor %}
 </section>
 </div>
@@ -392,7 +403,8 @@
 {% if day == 0 %}<td class="empty-day"></td>
 {% else %}<td class="{{ 'today' if day == calendar.today else '' }}"><span>{{ day }}</span></td>{% endif %}
 {% endfor %}
-</tr>{% endfor %}
+</tr>
+{% endfor %}
 </tbody>
 </table>
 </section>
@@ -444,14 +456,14 @@
 <div class="section-head"><h3>Configuración</h3><span>Sonido y Accesibilidad</span></div>
 <div class="switch-row" style="justify-content:center; align-items:center; gap:1.2rem; margin-bottom:0.8rem;">
 <span>Tamaño de letra</span>
-<div style="display:flex; gap:0.6rem; align-items:center;">
-<button type="button" id="font-decrease" aria-label="Achicar letra" style="width:32px;height:32px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;font-weight:600;">A-</button>
+<div style="display: flex; gap:0.6rem; align-items:center;">
+<button type="button" id="font-decrease" aria-label="Achicar letra" style="width: 32px;height:32px;border:1px solid #d1d5db;border-radius: 8px;background:#fff;cursor:pointer;font-weight:600;">A-</button>
 <span id="font-size-label" style="min-width:3.5ch; text-align:center; font-weight:600; color:#4f46e5;">100%</span>
-<button type="button" id="font-increase" aria-label="Agrandar letra" style="width:32px;height:32px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;font-weight:600;">A+</button>
+<button type="button" id="font-increase" aria-label="Agrandar letra" style="width: 32px;height:32px;border:1px solid #d1d5db;border-radius: 8px;background:#fff;cursor:pointer;font-weight:600;">A+</button>
 </div>
 </div>
 <label class="switch-row" style="justify-content:center;"><span>Activar lectura por parlantes de ayuda</span><input type="checkbox" id="voice-toggle-student" onchange="toggleVoice(this.checked)"></label>
-<label class="switch-row" style="justify-content:center;"><span>Activar sonido de notificación (mensajes y avisos)</span><input type="checkbox" id="sound-toggle-student" onchange="toggleSound(this.checked)"></label>
+<label class="switch-row" style="justify-content:center;"><span>Activar sonido de botones</span><input type="checkbox" id="sound-toggle-student" onchange="toggleSound(this.checked)"></label>
 </section>
 </div>
 {% endif %}
@@ -459,209 +471,182 @@
 </div>
 <script>
 function showView(name, evt) {
-  if (evt) evt.preventDefault();
-  document.querySelectorAll('.dashboard-main > .view').forEach(function(v) { v.classList.remove('active'); });
-  document.querySelectorAll('.sidebar nav a').forEach(function(a) { a.classList.remove('active'); });
-  var target = document.getElementById('view-' + name);
-  if (target) target.classList.add('active');
-  var link = document.querySelector('.sidebar nav a[data-view="' + name + '"]');
-  if (link) link.classList.add('active');
-  if (history.replaceState) history.replaceState(null, '', '#' + name);
-  window.scrollTo(0, 0);
-  return false;
+if (evt) evt.preventDefault();
+document.querySelectorAll('.dashboard-main > .view').forEach(function(v) { v.classList.remove('active'); });
+document.querySelectorAll('.sidebar nav a').forEach(function(a) { a.classList.remove('active'); });
+var target = document.getElementById('view-' + name);
+if (target) target.classList.add('active');
+var link = document.querySelector('.sidebar nav a[data-view="' + name + '"]');
+if (link) link.classList.add('active');
+if (history.replaceState) history.replaceState(null, '', '#' + name);
+window.scrollTo(0,0);
+return false;
 }
-
-// ---------- Tamaño de letra ----------
 var FONT_MIN = 80, FONT_MAX = 150, FONT_STEP = 10;
-
 function applyFontSize(percent) {
-  document.documentElement.style.fontSize = percent + '%';
-  localStorage.setItem('fontSizePercent', percent);
-  var label = document.getElementById('font-size-label');
-  if (label) label.textContent = percent + '%';
+document.documentElement.style.fontSize = percent + '%';
+localStorage.setItem('fontSizePercent', percent);
+var label = document.getElementById('font-size-label');
+if (label) label.textContent = percent + '%';
 }
-
 function changeFontSize(delta) {
-  var current = parseInt(localStorage.getItem('fontSizePercent'), 10) || 100;
-  var next = Math.min(FONT_MAX, Math.max(FONT_MIN, current + delta));
-  applyFontSize(next);
+var current = parseInt(localStorage.getItem('fontSizePercent'), 10) || 100;
+var next = Math.min(FONT_MAX, Math.max(FONT_MIN, current + delta));
+applyFontSize(next);
 }
-
-// ---------- Lectura por voz ----------
 function speakText(text) {
-  if (!text || !('speechSynthesis' in window)) return;
-  var utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'es-AR';
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utter);
+if (!text || !('speechSynthesis' in window)) return;
+var utter = new SpeechSynthesisUtterance(text);
+utter.lang = 'es-AR';
+speechSynthesis.cancel();
+speechSynthesis.speak(utter);
 }
-
-// Lee un texto y recién DESPUÉS ejecuta el callback (por ejemplo, enviar
-// el formulario). Así el botón se escucha siempre, sin que la página
-// se recargue antes de terminar de hablar.
 function speakThenRun(text, callback) {
-  if (!text || !('speechSynthesis' in window)) { callback(); return; }
-  var done = false;
-  function finish() {
-    if (done) return;
-    done = true;
-    callback();
-  }
-  var utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'es-AR';
-  utter.onend = finish;
-  utter.onerror = finish;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utter);
-  setTimeout(finish, 4000); // seguro por si el navegador no dispara "onend"
+if (!text || !('speechSynthesis' in window)) { callback(); return; }
+var done = false;
+function finish() {
+if (done) return;
+done = true;
+callback();
 }
-
+var utter = new SpeechSynthesisUtterance(text);
+utter.lang = 'es-AR';
+utter.onend = finish;
+utter.onerror = finish;
+speechSynthesis.cancel();
+speechSynthesis.speak(utter);
+setTimeout(finish, 4000);
+}
 function isVoiceEnabled() {
-  return localStorage.getItem('voiceEnabled') === 'true';
+return localStorage.getItem('voiceEnabled') === 'true';
 }
-
-// ---------- Sonido de notificación ----------
-// Apagado por defecto: un sonido inesperado puede resultar tan invasivo
-// como un color fuerte para alguien con sensibilidad auditiva. La persona
-// tiene que activarlo a propósito, igual que la lectura por voz.
 function isSoundEnabled() {
-  return localStorage.getItem('soundEnabled') === 'true';
+return localStorage.getItem('soundEnabled') === 'true';
 }
-
 function toggleSound(enabled) {
-  localStorage.setItem('soundEnabled', enabled);
-  if (enabled) playNotificationSound(); // un pantallazo suave de "así suena"
+localStorage.setItem('soundEnabled', enabled);
+var tSoundSwitch = document.getElementById('sound-toggle-teacher');
+var sSoundSwitch = document.getElementById('sound-toggle-student');
+if (tSoundSwitch) tSoundSwitch.checked = enabled;
+if (sSoundSwitch) sSoundSwitch.checked = enabled;
+if (enabled) playNotificationSound();
 }
-
-// Genera el sonido con la API de audio del navegador (sin archivos externos).
-// Es un timbre de dos notas, corto y suave, pensado para avisar sin sobresaltar:
-// nada de volumen alto, ni tonos agudos o metálicos.
 function playNotificationSound() {
-  if (!isSoundEnabled()) return;
-  try {
-    var AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
-    var ctx = new AudioContextClass();
-    var now = ctx.currentTime;
-
-    [523.25, 659.25].forEach(function (freq, i) { // dos notas suaves (Do, Mi)
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      var start = now + i * 0.14;
-      gain.gain.setValueAtTime(0, start);
-      gain.gain.linearRampToValueAtTime(0.08, start + 0.03); // volumen bajo a propósito
-      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(start);
-      osc.stop(start + 0.4);
-    });
-  } catch (e) {
-    // Si el navegador bloquea el audio (por ejemplo, sin interacción previa
-    // del usuario), no pasa nada: simplemente no suena.
-  }
-}
-
-// Compara la cantidad de novedades (mensajes sin leer + pedidos de ayuda
-// pendientes) contra la última vez que se cargó el panel. Si aumentó,
-// suena el aviso. No es tiempo real (no hay websockets en este proyecto),
-// pero alcanza para notificar en cada recarga/cambio de vista.
-function checkForNewNotifications(currentCount) {
-  var previous = parseInt(localStorage.getItem('lastNotificationCount') || '0', 10);
-  if (currentCount > previous) playNotificationSound();
-  localStorage.setItem('lastNotificationCount', String(currentCount));
-}
-
-function toggleVoice(enabled) {
-  localStorage.setItem('voiceEnabled', enabled);
-  updateSpeakersVisibility(enabled);
-}
-
-function updateSpeakersVisibility(enabled) {
-  document.querySelectorAll('.speaker-btn, .voice-icon').forEach(function(el) {
-    el.style.display = enabled ? 'inline-block' : 'none';
-  });
-}
-
-// Agrega un parlantito a cada botón de la app. Si la voz está activada:
-// - si el botón envía un formulario, primero se escucha y recién después
-//   se envía (Enviar, Completar, Guardar, Publicar, etc.)
-// - si el botón solo hace una acción en pantalla (abrir un modal, cambiar
-//   de vista), se escucha y se ejecuta al mismo tiempo.
-function setupButtonVoice() {
-  document.querySelectorAll('.dashboard-main button').forEach(function(el) {
-    if (el.classList.contains('speaker-btn') || el.dataset.voiceReady === 'true') return;
-    el.dataset.voiceReady = 'true';
-
-    var icon = document.createElement('span');
-    icon.className = 'voice-icon';
-    icon.textContent = ' 🔊';
-    icon.style.marginLeft = '4px';
-    icon.style.display = isVoiceEnabled() ? 'inline-block' : 'none';
-    el.appendChild(icon);
-
-    el.addEventListener('click', function(evt) {
-      if (!isVoiceEnabled()) return;
-      var label = (el.dataset.speak || el.textContent || '').replace('🔊', '').trim();
-      if (!label) return;
-
-      var form = el.closest('form');
-      var isSubmit = form && el.type === 'submit';
-
-      if (isSubmit) {
-        evt.preventDefault();
-        speakThenRun(label, function() {
-          if (form.requestSubmit) form.requestSubmit(el);
-          else form.submit();
-        });
-      } else {
-        speakText(label);
-      }
-    });
-  });
-
-  document.querySelectorAll('.speaker-btn').forEach(function(btn) {
-    if (btn.dataset.voiceReady === 'true') return;
-    btn.dataset.voiceReady = 'true';
-    btn.addEventListener('click', function() { speakText(btn.dataset.speak || ''); });
-  });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  var initial = (window.location.hash || '#home').slice(1);
-  if (!document.getElementById('view-' + initial)) initial = 'home';
-  showView(initial);
-
-  var savedFont = parseInt(localStorage.getItem('fontSizePercent'), 10) || 100;
-  applyFontSize(savedFont);
-  var decreaseBtn = document.getElementById('font-decrease');
-  var increaseBtn = document.getElementById('font-increase');
-  if (decreaseBtn) decreaseBtn.addEventListener('click', function() { changeFontSize(-FONT_STEP); });
-  if (increaseBtn) increaseBtn.addEventListener('click', function() { changeFontSize(FONT_STEP); });
-
-  var vEnabled = isVoiceEnabled();
-  var tSwitch = document.getElementById('voice-toggle-teacher');
-  var sSwitch = document.getElementById('voice-toggle-student');
-  if (tSwitch) tSwitch.checked = vEnabled;
-  if (sSwitch) sSwitch.checked = vEnabled;
-
-  setupButtonVoice();
-  updateSpeakersVisibility(vEnabled);
-
-  var soundEnabled = isSoundEnabled();
-  var tSoundSwitch = document.getElementById('sound-toggle-teacher');
-  var sSoundSwitch = document.getElementById('sound-toggle-student');
-  if (tSoundSwitch) tSoundSwitch.checked = soundEnabled;
-  if (sSoundSwitch) sSoundSwitch.checked = soundEnabled;
-  checkForNewNotifications({{ (unread_total or 0) + (pending_help_count or 0) }});
+if (!isSoundEnabled()) return;
+try {
+var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+if (!AudioContextClass) return;
+var ctx = new AudioContextClass();
+var now = ctx.currentTime;
+[523.25, 659.25].forEach(function(freq, i) {
+var osc = ctx.createOscillator();
+var gain = ctx.createGain();
+osc.type = 'sine';
+osc.frequency.value = freq;
+var start = now + (i * 0.14);
+gain.gain.setValueAtTime(0, start);
+gain.gain.linearRampToValueAtTime(0.08, start + 0.03);
+gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+osc.connect(gain).connect(ctx.destination);
+osc.start(start);
+osc.stop(start + 0.4);
 });
-
+} catch (e) {}
+}
+function checkForNewNotifications(currentCount) {
+var previous = parseInt(localStorage.getItem('lastNotificationCount') || '0', 10);
+if (currentCount > previous) playNotificationSound();
+localStorage.setItem('lastNotificationCount', String(currentCount));
+}
+function toggleVoice(enabled) {
+localStorage.setItem('voiceEnabled', enabled);
+var tSwitch = document.getElementById('voice-toggle-teacher');
+var sSwitch = document.getElementById('voice-toggle-student');
+if (tSwitch) tSwitch.checked = enabled;
+if (sSwitch) sSwitch.checked = enabled;
+updateSpeakersVisibility(enabled);
+}
+function updateSpeakersVisibility(enabled) {
+document.querySelectorAll('.speaker-btn, .voice-icon').forEach(function(el) {
+el.style.display = enabled ? 'inline-block' : 'none';
+});
+}
+function setupButtonVoice() {
+document.querySelectorAll('.dashboard-main button').forEach(function(el) {
+if (el.classList.contains('speaker-btn') || el.dataset.voiceReady === 'true') return;
+el.dataset.voiceReady = 'true';
+var icon = document.createElement('span');
+icon.className = 'voice-icon';
+icon.textContent = '🔊';
+icon.style.marginLeft = '4px';
+icon.style.display = isVoiceEnabled() ? 'inline-block' : 'none';
+el.appendChild(icon);
+el.addEventListener('click', function(evt) {
+if (!isVoiceEnabled()) return;
+playNotificationSound();
+var label = (el.dataset.speak || el.textContent || '').replace('🔊','').trim();
+if (!label) return;
+var form = el.closest('form');
+var isSubmit = form && el.type === 'submit';
+if (isSubmit) {
+evt.preventDefault();
+speakThenRun(label, function() {
+if (form.requestSubmit) form.requestSubmit(el);
+else form.submit();
+});
+} else {
+speakText(label);
+}
+});
+});
+document.querySelectorAll('.speaker-btn').forEach(function(btn) {
+if (btn.dataset.voiceReady === 'true') return;
+btn.dataset.voiceReady = 'true';
+btn.addEventListener('click', function() {
+playNotificationSound();
+speakText(btn.dataset.speak || '');
+});
+});
+}
+document.addEventListener('DOMContentLoaded', function() {
+var initial = (window.location.hash || '#home').slice(1);
+if (!document.getElementById('view-' + initial)) initial = 'home';
+showView(initial);
+var savedFont = parseInt(localStorage.getItem('fontSizePercent'), 10) || 100;
+applyFontSize(savedFont);
+var decreaseBtn = document.getElementById('font-decrease');
+var increaseBtn = document.getElementById('font-increase');
+if (decreaseBtn) decreaseBtn.addEventListener('click', function() { changeFontSize(-FONT_STEP); });
+if (increaseBtn) increaseBtn.addEventListener('click', function() { changeFontSize(FONT_STEP); });
+var vEnabled = isVoiceEnabled();
+var tSwitch = document.getElementById('voice-toggle-teacher');
+var sSwitch = document.getElementById('voice-toggle-student');
+if (tSwitch) tSwitch.checked = vEnabled;
+if (sSwitch) sSwitch.checked = vEnabled;
+updateSpeakersVisibility(vEnabled);
+var soundEnabled = isSoundEnabled();
+var tSoundSwitch = document.getElementById('sound-toggle-teacher');
+var sSoundSwitch = document.getElementById('sound-toggle-student');
+if (tSoundSwitch) tSoundSwitch.checked = soundEnabled;
+if (sSoundSwitch) sSoundSwitch.checked = soundEnabled;
+setupButtonVoice();
+checkForNewNotifications({{ (unread_total or 0) + (pending_help_count or 0) }});
+});
 function filterTasks() {
-  var query = document.getElementById('search-tasks').value.toLowerCase();
-  document.querySelectorAll('.subject-block .task-row').forEach(function(row) {
-    row.style.display = row.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
-  });
+var query = document.getElementById('search-tasks').value.toLowerCase();
+document.querySelectorAll('#view-misclases .subject-block').forEach(function(block) {
+var foundMatch = false;
+block.querySelectorAll('.task-row').forEach(function(row) {
+var text = row.textContent.toLowerCase();
+if (text.includes(query)) {
+row.style.display = 'flex';
+foundMatch = true;
+} else {
+row.style.display = 'none';
+}
+});
+block.style.display = foundMatch ? 'block' : 'none';
+});
 }
 </script>
 {% endblock %}

@@ -83,6 +83,17 @@ def create_task():
     return redirect(url_for("dashboard.dashboard"))
 
 
+@task_bp.post("/teacher/tasks/<int:task_id>/delete-attachment")
+@role_required("teacher")
+def delete_task_attachment(task_id: int):
+    task_rows = query("SELECT * FROM tasks WHERE id = ? AND teacher_id = ?", (task_id, current_user()["id"]))
+    if not task_rows:
+        abort(404)
+    execute("UPDATE tasks SET file_path = NULL, file_name = NULL WHERE id = ?", (task_id,))
+    flash("Archivo adjunto eliminado correctamente.", "success")
+    return redirect(url_for("dashboard.dashboard") + "#aula")
+
+
 @task_bp.route("/uploads/<path:stored_name>")
 @login_required
 def uploaded_file(stored_name: str):
